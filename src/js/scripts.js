@@ -13,10 +13,10 @@ document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(
-    45, // field of view
+    90, // field of view
     window.innerWidth / window.innerHeight, // aspect ratio
     0.1, // near plane
-    1000 // far plane
+    100000 // far plane
 );
 
 const orbit = new OrbitControls(camera, renderer.domElement); 
@@ -26,6 +26,11 @@ scene.add(AxesHelper); // add the axes to the scene
 camera.position.set(-10,30,30); // set the camera position to 5 units from the origin
 orbit.update();
 
+
+var xmove=0;
+var carrotate=0;
+var accelerate=false;
+var deccelerate=false;
 const BoxGeometry = new THREE.BoxGeometry(); // create a box
 const BoxMaterial = new THREE.MeshStandardMaterial({color: 0x00ff00}); // create a green box
 const Box = new THREE.Mesh(BoxGeometry, BoxMaterial); // create a mesh with the geometry and material
@@ -33,9 +38,10 @@ Box.scale.set(5, 5, 5); // scale the mesh
 scene.add(Box); // add the box to the scene and start the render loop
 Box.castShadow = true;
 Box.receiveShadow = true;
+Box.translateX(10)
+Box.translateY(10)
 
-
-const planeGeometry = new THREE.PlaneGeometry(30, 30); // create a plane
+const planeGeometry = new THREE.PlaneGeometry(10000, 10000); // create a plane
 const planeMaterial = new THREE.MeshStandardMaterial({
     color: 0xffffff,
     side: THREE.DoubleSide
@@ -55,21 +61,166 @@ const sphereMaterial = new THREE.MeshStandardMaterial({
     color: 0xffff00,
     wireframe: false
 });
+function createWheels() {
+    const geometry = new THREE.BoxBufferGeometry(12, 12, 10);
+    const material = new THREE.MeshLambertMaterial({ color: 0x333333 });
+    const wheel = new THREE.Mesh(geometry, material);
+    return wheel;
+  }
+  function getCarFrontTexture() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 64;
+    canvas.height = 32;
+    const context = canvas.getContext("2d");
+  
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, 64, 32);
+  
+    context.fillStyle = "#666666";
+    context.fillRect(8, 8, 48, 24);
+  
+    return new THREE.CanvasTexture(canvas);
+  }
+  function getCarSideTexture() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 32;
+    const context = canvas.getContext("2d");
+  
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, 128, 32);
+  
+    context.fillStyle = "#666666";
+    context.fillRect(10, 8, 38, 24);
+    context.fillRect(58, 8, 60, 24);
+  
+    return new THREE.CanvasTexture(canvas);
+  }
 
+  function createCar() {
+    const car = new THREE.Group();
+  
+    var backWheel = createWheels();
+    backWheel.position.y = 6;
+    backWheel.position.x = -18;
+    backWheel.position.z = -12;
+    car.add(backWheel);
+
+    backWheel = createWheels();
+    backWheel.position.y = 6;
+    backWheel.position.x = -18;
+    backWheel.position.z = 12;
+    car.add(backWheel);
+  
+    var frontWheel = createWheels();
+    frontWheel.position.y = 6;
+    frontWheel.position.x = 18;
+    frontWheel.position.z = -12;
+    car.add(frontWheel);
+
+    frontWheel = createWheels();
+    frontWheel.position.y = 6;
+    frontWheel.position.x = 18;
+    frontWheel.position.z = 12;
+
+    car.add(frontWheel);
+  
+    const main = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(60, 15, 30),
+      new THREE.MeshLambertMaterial({ color: 0xa52523 })
+    );
+
+    window.addEventListener("keydown", function (event) {
+
+        if (event.key == "ArrowUp") {
+          xmove=1.5;
+          return;
+        }
+        if (event.key == "ArrowDown") {
+         xmove=-1;
+          return;
+        }
+        if (event.key == "ArrowLeft") {
+            carrotate=0.02;
+            return;
+          }
+          if ((event.key == "ArrowRight")) {
+            carrotate=-0.02;
+            return;
+          }
+
+      });
+    window.addEventListener("keyup", function (event) {
+        if (event.key == "ArrowUp") {
+          xmove=0;
+          return;
+        }
+        if (event.key == "ArrowDown") {
+            xmove=0;
+          return;
+        }
+
+        if (event.key == "ArrowLeft") {
+            carrotate=0;
+            return;
+          }
+          if (event.key == "ArrowRight") {
+            carrotate=0;
+            return;
+          }
+      });
+
+    if(accelerate){
+        const xmove=10;
+    };
+
+
+    main.position.y = 12;
+    car.add(main);
+    
+    const carFrontTexture = getCarFrontTexture();
+  
+    const carBackTexture = getCarFrontTexture();
+  
+    const carRightSideTexture = getCarSideTexture();
+  
+    const carLeftSideTexture = getCarSideTexture();
+    carLeftSideTexture.center = new THREE.Vector2(0.5, 0.5);
+    carLeftSideTexture.rotation = Math.PI;
+    carLeftSideTexture.flipY = false;
+  
+    const cabin = new THREE.Mesh(new THREE.BoxBufferGeometry(33, 12, 24), [
+      new THREE.MeshLambertMaterial({ map: carFrontTexture }),
+      new THREE.MeshLambertMaterial({ map: carBackTexture }),
+      new THREE.MeshLambertMaterial({ color: 0xffffff }), // top
+      new THREE.MeshLambertMaterial({ color: 0xffffff }), // bottom
+      new THREE.MeshLambertMaterial({ map: carRightSideTexture }),
+      new THREE.MeshLambertMaterial({ map: carLeftSideTexture }),
+    ]);
+    cabin.position.x = -6;
+    cabin.position.y = 25.5;
+    car.add(cabin);
+  
+    return car;
+  }
+  
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 scene.add(sphere);
 
+const car = createCar();
+scene.add(car);
 
+renderer.render(scene, camera);
 
 sphere.position.set(-10, 15, 0);
 sphere.castShadow = true;
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
 scene.add(ambientLight);
 
-const spotlight = new THREE.SpotLight(0xffffff, 1);
+const spotlight = new THREE.SpotLight(0xffffff, 0.1);
 scene.add(spotlight);
-spotlight.position.set(-30, 50, 0);
+spotlight.position.set(0,100, 0);
 spotlight.castShadow = true;
 spotlight.angle = 0.5;
 const spotLightHelper = new THREE.SpotLightHelper(spotlight);
@@ -111,6 +262,8 @@ gui.add(options, 'sphereWireframe').onChange(function(e){
 function animate(time) {
     Box.rotation.x = time/1000;
     Box.rotation.y = time/1000;
+    car.translateX(xmove);
+    car.rotateY(carrotate)
     renderer.render(scene, camera); // render the scene
 }
 

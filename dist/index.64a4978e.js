@@ -142,7 +142,7 @@
       this[globalName] = mainExports;
     }
   }
-})({"48Ynw":[function(require,module,exports) {
+})({"cYgBU":[function(require,module,exports) {
 "use strict";
 var HMR_HOST = null;
 var HMR_PORT = null;
@@ -534,13 +534,17 @@ renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 const scene = new _three.Scene();
-const camera = new _three.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000 // far plane
+const camera = new _three.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 100000 // far plane
 );
 const orbit = new _orbitControlsJs.OrbitControls(camera, renderer.domElement);
 const AxesHelper = new _three.AxesHelper(5); // 10 is the length of the axes
 scene.add(AxesHelper); // add the axes to the scene
 camera.position.set(-10, 30, 30); // set the camera position to 5 units from the origin
 orbit.update();
+var xmove = 0;
+var carrotate = 0;
+var accelerate = false;
+var deccelerate = false;
 const BoxGeometry = new _three.BoxGeometry(); // create a box
 const BoxMaterial = new _three.MeshStandardMaterial({
     color: 0x00ff00
@@ -550,7 +554,9 @@ Box.scale.set(5, 5, 5); // scale the mesh
 scene.add(Box); // add the box to the scene and start the render loop
 Box.castShadow = true;
 Box.receiveShadow = true;
-const planeGeometry = new _three.PlaneGeometry(30, 30); // create a plane
+Box.translateX(10);
+Box.translateY(10);
+const planeGeometry = new _three.PlaneGeometry(10000, 10000); // create a plane
 const planeMaterial = new _three.MeshStandardMaterial({
     color: 0xffffff,
     side: _three.DoubleSide
@@ -566,15 +572,147 @@ const sphereMaterial = new _three.MeshStandardMaterial({
     color: 0xffff00,
     wireframe: false
 });
+function createWheels() {
+    const geometry = new _three.BoxBufferGeometry(12, 12, 10);
+    const material = new _three.MeshLambertMaterial({
+        color: 0x333333
+    });
+    const wheel = new _three.Mesh(geometry, material);
+    return wheel;
+}
+function getCarFrontTexture() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 64;
+    canvas.height = 32;
+    const context = canvas.getContext("2d");
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, 64, 32);
+    context.fillStyle = "#666666";
+    context.fillRect(8, 8, 48, 24);
+    return new _three.CanvasTexture(canvas);
+}
+function getCarSideTexture() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 32;
+    const context = canvas.getContext("2d");
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, 128, 32);
+    context.fillStyle = "#666666";
+    context.fillRect(10, 8, 38, 24);
+    context.fillRect(58, 8, 60, 24);
+    return new _three.CanvasTexture(canvas);
+}
+function createCar() {
+    const car1 = new _three.Group();
+    var backWheel = createWheels();
+    backWheel.position.y = 6;
+    backWheel.position.x = -18;
+    backWheel.position.z = -12;
+    car1.add(backWheel);
+    backWheel = createWheels();
+    backWheel.position.y = 6;
+    backWheel.position.x = -18;
+    backWheel.position.z = 12;
+    car1.add(backWheel);
+    var frontWheel = createWheels();
+    frontWheel.position.y = 6;
+    frontWheel.position.x = 18;
+    frontWheel.position.z = -12;
+    car1.add(frontWheel);
+    frontWheel = createWheels();
+    frontWheel.position.y = 6;
+    frontWheel.position.x = 18;
+    frontWheel.position.z = 12;
+    car1.add(frontWheel);
+    const main = new _three.Mesh(new _three.BoxBufferGeometry(60, 15, 30), new _three.MeshLambertMaterial({
+        color: 0xa52523
+    }));
+    window.addEventListener("keydown", function(event) {
+        if (event.key == "ArrowUp") {
+            xmove = 1.5;
+            return;
+        }
+        if (event.key == "ArrowDown") {
+            xmove = -1;
+            return;
+        }
+        if (event.key == "ArrowLeft") {
+            carrotate = 0.02;
+            return;
+        }
+        if (event.key == "ArrowRight") {
+            carrotate = -0.02;
+            return;
+        }
+    });
+    window.addEventListener("keyup", function(event) {
+        if (event.key == "ArrowUp") {
+            xmove = 0;
+            return;
+        }
+        if (event.key == "ArrowDown") {
+            xmove = 0;
+            return;
+        }
+        if (event.key == "ArrowLeft") {
+            carrotate = 0;
+            return;
+        }
+        if (event.key == "ArrowRight") {
+            carrotate = 0;
+            return;
+        }
+    });
+    if (accelerate) {
+        const xmove = 10;
+    }
+    main.position.y = 12;
+    car1.add(main);
+    const carFrontTexture = getCarFrontTexture();
+    const carBackTexture = getCarFrontTexture();
+    const carRightSideTexture = getCarSideTexture();
+    const carLeftSideTexture = getCarSideTexture();
+    carLeftSideTexture.center = new _three.Vector2(0.5, 0.5);
+    carLeftSideTexture.rotation = Math.PI;
+    carLeftSideTexture.flipY = false;
+    const cabin = new _three.Mesh(new _three.BoxBufferGeometry(33, 12, 24), [
+        new _three.MeshLambertMaterial({
+            map: carFrontTexture
+        }),
+        new _three.MeshLambertMaterial({
+            map: carBackTexture
+        }),
+        new _three.MeshLambertMaterial({
+            color: 0xffffff
+        }),
+        new _three.MeshLambertMaterial({
+            color: 0xffffff
+        }),
+        new _three.MeshLambertMaterial({
+            map: carRightSideTexture
+        }),
+        new _three.MeshLambertMaterial({
+            map: carLeftSideTexture
+        }), 
+    ]);
+    cabin.position.x = -6;
+    cabin.position.y = 25.5;
+    car1.add(cabin);
+    return car1;
+}
 const sphere = new _three.Mesh(sphereGeometry, sphereMaterial);
 scene.add(sphere);
+const car = createCar();
+scene.add(car);
+renderer.render(scene, camera);
 sphere.position.set(-10, 15, 0);
 sphere.castShadow = true;
-const ambientLight = new _three.AmbientLight(0xffffff, 0.2);
+const ambientLight = new _three.AmbientLight(0xffffff, 0.8);
 scene.add(ambientLight);
-const spotlight = new _three.SpotLight(0xffffff, 1);
+const spotlight = new _three.SpotLight(0xffffff, 0.1);
 scene.add(spotlight);
-spotlight.position.set(-30, 50, 0);
+spotlight.position.set(0, 100, 0);
 spotlight.castShadow = true;
 spotlight.angle = 0.5;
 const spotLightHelper = new _three.SpotLightHelper(spotlight);
@@ -602,6 +740,8 @@ gui.add(options, 'sphereWireframe').onChange(function(e) {
 function animate(time) {
     Box.rotation.x = time / 1000;
     Box.rotation.y = time / 1000;
+    car.translateX(xmove);
+    car.rotateY(carrotate);
     renderer.render(scene, camera); // render the scene
 }
 renderer.setAnimationLoop(animate);
@@ -30416,7 +30556,7 @@ if (typeof window !== 'undefined') {
     else window.__THREE__ = REVISION;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}],"5K4W2":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"dDQD2"}],"dDQD2":[function(require,module,exports) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -31135,7 +31275,7 @@ class MapControls extends OrbitControls {
     }
 }
 
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}],"k3xQk":[function(require,module,exports) {
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"dDQD2"}],"k3xQk":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "color", ()=>color
@@ -33431,6 +33571,6 @@ var index = {
 };
 exports.default = index;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"5K4W2"}]},["48Ynw","goJYj"], "goJYj", "parcelRequiredd4a")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"dDQD2"}]},["cYgBU","goJYj"], "goJYj", "parcelRequiredd4a")
 
 //# sourceMappingURL=index.64a4978e.js.map
