@@ -65,6 +65,7 @@ function LoadModel(){
     scene.add(gltf.scene)
   })
 }
+
 LoadModel();
 
 const sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
@@ -276,6 +277,7 @@ function animate(time) {
     camera.position.set(car.position.x,camera.position.y,camera.position.z)
     car.rotateY(carrotate)
     renderer.render(scene, camera); // render the scene
+    console.log('loading')
 }
 
 renderer.setAnimationLoop(animate);
