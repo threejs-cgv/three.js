@@ -1,10 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import{GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as dat from 'dat.gui';
 import { Scene } from 'three';
 
-const renderer = new THREE.WebGLRenderer();
-
+const renderer = new THREE.WebGLRenderer({
+  antialias: true
+});
 renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -13,16 +15,15 @@ document.body.appendChild(renderer.domElement);
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(
-    90, // field of view
-    window.innerWidth / window.innerHeight, // aspect ratio
-    0.1, // near plane
-    100000 // far plane
+  90, // field of view
+  window.innerWidth / window.innerHeight, // aspect ratio
+  0.1, // near plane
+  100000 // far plane
 );
 
 const orbit = new OrbitControls(camera, renderer.domElement); 
 
-const AxesHelper = new THREE.AxesHelper(5); // 10 is the length of the axes
-scene.add(AxesHelper); // add the axes to the scene
+
 camera.position.set(-10,30,30); // set the camera position to 5 units from the origin
 orbit.update();
 
@@ -53,8 +54,18 @@ scene.add(plane);
 plane.rotation.x = -0.5 * Math.PI;
 plane.receiveShadow = true;
 
-const gridHelper = new THREE.GridHelper(30);
-scene.add(gridHelper);
+
+function LoadModel(){
+  const loader=new GLTFLoader();
+  console.log('loading')
+  loader.load('./Assets/alfa_romeo_stradale_1967/scene.gltf',(gltf)=>{
+    gltf.scene.traverse(c=> {
+      c.castShadow=true;
+    });
+    scene.add(gltf.scene)
+  })
+}
+LoadModel();
 
 const sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
 const sphereMaterial = new THREE.MeshStandardMaterial({
@@ -131,7 +142,6 @@ function createWheels() {
     );
 
     window.addEventListener("keydown", function (event) {
-
         if (event.key == "ArrowUp") {
           xmove=1.5;
           return;
@@ -256,24 +266,23 @@ gui.addColor(options, 'sphereColor').onChange(function(e){
 gui.add(options, 'sphereWireframe').onChange(function(e){
     sphereMaterial.wireframe = e;
 });
-
+ 
 
 
 function animate(time) {
     Box.rotation.x = time/1000;
     Box.rotation.y = time/1000;
     car.translateX(xmove);
+    camera.position.set(car.position.x,camera.position.y,camera.position.z)
     car.rotateY(carrotate)
     renderer.render(scene, camera); // render the scene
 }
 
 renderer.setAnimationLoop(animate);
 
-
-
-
-
-
-
-
-
+class ThirdPersonCamera{
+  constructor(params){
+    this._params=params;
+    this._camera=params.camera;
+  }
+}
