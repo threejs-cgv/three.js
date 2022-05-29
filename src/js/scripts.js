@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import{GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
+import{RGBELoader} from 'three/examples/jsm/loaders/RGBELoader.js';
 import * as dat from 'dat.gui';
 import { Scene } from 'three';
+import { REVISION } from 'three';
 
 const renderer = new THREE.WebGLRenderer({
   antialias: true
@@ -54,14 +56,26 @@ scene.add(plane);
 plane.rotation.x = -0.5 * Math.PI;
 plane.receiveShadow = true;
 
-let car
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=4;
 
-  const loader=new GLTFLoader();
-  loader.load('./assets/scene.gltf',function(gltf){
+
+const rgbeLoader= new RGBELoader();
+let car
+rgbeLoader.load('./assets/MR_INT-005_WhiteNeons_NAD.hdr',function(texture){
+    texture.mapping=THREE.EquirectangularReflectionMapping;
+    scene.environment=texture;
+    const loader=new GLTFLoader();
+    loader.load('./assets/scene.gltf',function(gltf){
     const model=gltf.scene;
     scene.add(model)
     car=model
   });
+});
+
+
+  
 
 const sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
 const sphereMaterial = new THREE.MeshStandardMaterial({
@@ -265,14 +279,13 @@ gui.add(options, 'sphereWireframe').onChange(function(e){
 
 function animate(time) {
   if(car){
-    car.rotation.y=-time/3000;
+    car.position.z=car.position.z+0.01;
   }
+
     Box.rotation.x = time/1000;
     Box.rotation.y = time/1000;
-    car.translateX(xmove);
-    car.rotateY(carrotate)
     renderer.render(scene, camera); // render the scene
-    console.log('loading')
+    
 }
 
 renderer.setAnimationLoop(animate);
