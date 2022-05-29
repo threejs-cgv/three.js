@@ -142,7 +142,7 @@
       this[globalName] = mainExports;
     }
   }
-})({"1oWIN":[function(require,module,exports) {
+})({"6YDH5":[function(require,module,exports) {
 "use strict";
 var global = arguments[3];
 var HMR_HOST = null;
@@ -543,17 +543,13 @@ const plane = new _three.Mesh(planeGeometry, planeMaterial);
 scene.add(plane);
 plane.rotation.x = -0.5 * Math.PI;
 plane.receiveShadow = true;
-function LoadModel() {
-    const loader = new (0, _gltfloaderJs.GLTFLoader)();
-    console.log("loading");
-    loader.load("./Assets/alfa_romeo_stradale_1967/scene.gltf", (gltf)=>{
-        gltf.scene.traverse((c)=>{
-            c.castShadow = true;
-        });
-        scene.add(gltf.scene);
-    });
-}
-LoadModel();
+let car;
+const loader = new (0, _gltfloaderJs.GLTFLoader)();
+loader.load("./assets/scene.gltf", function(gltf) {
+    const model = gltf.scene;
+    scene.add(model);
+    car = model;
+});
 const sphereGeometry = new _three.SphereGeometry(5, 32, 32);
 const sphereMaterial = new _three.MeshStandardMaterial({
     color: 0xffff00,
@@ -690,8 +686,6 @@ function createCar() {
 }
 const sphere = new _three.Mesh(sphereGeometry, sphereMaterial);
 scene.add(sphere);
-const car = createCar();
-scene.add(car);
 renderer.render(scene, camera);
 sphere.position.set(-10, 15, 0);
 sphere.castShadow = true;
@@ -725,10 +719,10 @@ gui.add(options, "sphereWireframe").onChange(function(e) {
     sphereMaterial.wireframe = e;
 });
 function animate(time) {
+    if (car) car.rotation.y = -time / 3000;
     Box.rotation.x = time / 1000;
     Box.rotation.y = time / 1000;
     car.translateX(xmove);
-    camera.position.set(car.position.x, camera.position.y, camera.position.z);
     car.rotateY(carrotate);
     renderer.render(scene, camera); // render the scene
     console.log("loading");
@@ -30103,7 +30097,7 @@ if (typeof window !== "undefined") {
     else window.__THREE__ = REVISION;
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"dDQD2"}],"dDQD2":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -30820,7 +30814,7 @@ class MapControls extends OrbitControls {
     }
 }
 
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"dDQD2"}],"dVRsF":[function(require,module,exports) {
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"dVRsF":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "GLTFLoader", ()=>GLTFLoader);
@@ -33150,7 +33144,7 @@ function buildNodeHierarchy(nodeId, parentObject, json, parser) {
     return newGeometry;
 }
 
-},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"dDQD2"}],"k3xQk":[function(require,module,exports) {
+},{"three":"ktPTu","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"k3xQk":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "color", ()=>color);
@@ -35441,6 +35435,6 @@ var index = {
 };
 exports.default = index;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"dDQD2"}]},["1oWIN","goJYj"], "goJYj", "parcelRequiredd4a")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["6YDH5","goJYj"], "goJYj", "parcelRequiredd4a")
 
 //# sourceMappingURL=index.64a4978e.js.map
