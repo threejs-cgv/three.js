@@ -54,19 +54,14 @@ scene.add(plane);
 plane.rotation.x = -0.5 * Math.PI;
 plane.receiveShadow = true;
 
+let car
 
-function LoadModel(){
   const loader=new GLTFLoader();
-  console.log('loading')
-  loader.load('./Assets/alfa_romeo_stradale_1967/scene.gltf',(gltf)=>{
-    gltf.scene.traverse(c=> {
-      c.castShadow=true;
-    });
-    scene.add(gltf.scene)
-  })
-}
-
-LoadModel();
+  loader.load('./assets/scene.gltf',function(gltf){
+    const model=gltf.scene;
+    scene.add(model)
+    car=model
+  });
 
 const sphereGeometry = new THREE.SphereGeometry(5, 32, 32);
 const sphereMaterial = new THREE.MeshStandardMaterial({
@@ -218,8 +213,6 @@ function createWheels() {
 const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 scene.add(sphere);
 
-const car = createCar();
-scene.add(car);
 
 renderer.render(scene, camera);
 
@@ -271,10 +264,12 @@ gui.add(options, 'sphereWireframe').onChange(function(e){
 
 
 function animate(time) {
+  if(car){
+    car.rotation.y=-time/3000;
+  }
     Box.rotation.x = time/1000;
     Box.rotation.y = time/1000;
     car.translateX(xmove);
-    camera.position.set(car.position.x,camera.position.y,camera.position.z)
     car.rotateY(carrotate)
     renderer.render(scene, camera); // render the scene
     console.log('loading')
