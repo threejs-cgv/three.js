@@ -19,14 +19,14 @@
   "homepage": "https://github.com/threejs-cgv/threejs#readme",
   "dependencies": {
     "dat.gui": "^0.7.9",
+    "stats.js": "^0.17.0",
     "three": "^0.140.2"
   },
   "devDependencies": {
     "@parcel/config-default": "^2.6.0",
     "parcel-reporter-static-files-copy": "^1.3.4"
   },
-    "staticFiles":{
-      "staticOutPath":"assets"
-    }
-  
+  "staticFiles": {
+    "staticOutPath": "assets"
+  }
 }
