@@ -41,10 +41,12 @@ const grassNormal=textureLoader.load('./assets/Dirt/Ground_Dirt_008_normal.jpg')
 const grassHeight=textureLoader.load('./assets/Dirt/Ground_Dirt_008_height.png');
 const grassRoughness=textureLoader.load('./assets/Dirt/Ground_Dirt_008_roughness.jpg');
 const grassAmbientOcclusioMap=textureLoader.load('./assets/Dirt/Ground_Dirt_008_ambientOcclusion.jpg');
-const grassMaterial=textureLoader.load('./assets/GrassTexture/Material_1597.jpg');
+const Speed=textureLoader.load('./assets/Speedometer/Speedometer.jpg');
+
 
 
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 document.body.appendChild(renderer.domElement);
@@ -54,8 +56,10 @@ camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight
     scene = new THREE.Scene();
 camera.lookAt( 0,0,0 );
 
-//const light = new THREE.AmbientLight( 0x404040 ); // soft white light
-//scene.add( light );
+
+
+const light = new THREE.AmbientLight( 0x404040 ); // soft white light
+scene.add( light );
 
 grassBaseColor.wrapS = THREE.RepeatWrapping;
 grassBaseColor.wrapT = THREE.RepeatWrapping;
@@ -105,6 +109,9 @@ for(let i=0;i<6;i++){
 let skyboxGeo = new THREE.BoxGeometry(10000,10000,10000);
 let skybox=new THREE.Mesh(skyboxGeo,materialArray);
 scene.add(skybox)
+
+
+
 
 
 const porsche=new THREE.Group();
@@ -178,12 +185,8 @@ porsche.add( follow );
 goal.translateZ(-10);
 goal.add( camera );
 scene.add( porsche );
+porsche.castShadow
 porsche.scale.set(0.5,0.5,0.5)
-var gridHelper = new THREE.GridHelper( 40, 40 );
-scene.add( gridHelper );
-
-scene.add( new THREE.AxesHelper() );
-
 
 
 keys = {
@@ -207,17 +210,6 @@ document.body.addEventListener( 'keyup', function(e) {
     keys[ key ] = false;
   
 });
-
-function createStats() {
-  var stats = new Stats();
-  stats.setMode(0);
-
-  stats.domElement.style.position = 'absolute';
-  stats.domElement.style.left = '0';
-  stats.domElement.style.top = '0';
-
-  return stats;
-}
 
 function getRandomInt(min, max) {
   min = Math.ceil(min);
@@ -261,30 +253,30 @@ document.body.appendChild(timer);
 
 renderer.render(scene, camera);
 
-
+let factor=0.00006;
 
 function animate(time) {
   stats.begin()
   
   if ( keys.w && speed<70/6){
     if(speed<=9.2/6){
-      speed+=5*0.016564/6
+      speed+=5*0.016564/6-(left*speed*factor)-(right*speed*factor)
     }
     else if(speed<=27.77/6 && speed>9.2/6){
-      speed+=4*0.016564/6
+      speed+=4*0.016564/6-(left*speed*factor)-(right*speed*factor)
     }
     else if(speed>27.77/6 && speed<=44.444/6){
-      speed+=1.5*0.016564/6
+      speed+=1.5*0.016564/6-(left*speed*factor)-(right*speed*factor)
     }
     else if(speed>44.444/6 && speed<=60.555/6){
-      speed+=1.2*0.016564/6
+      speed+=1.2*0.016564/6-(left*speed*factor)-(right*speed*factor)
     }
     else if(speed>60.555/6 && speed<63/6){
-      speed+=0.9*0.016564/6
+      speed+=0.9*0.016564/6-(left*speed*factor)-(right*speed*factor)
     }
     else if(speed>63/6){
       var z=getRandomInt(-100,100)
-      speed+=z*0.05 * 0.016564/6
+      speed+=z*0.05 * 0.016564/6-(left*speed*factor)-(right*speed*factor)
     }
     if(speed>64/6){
       speed-=Math.random()*0.016564/6*0.5
@@ -301,11 +293,11 @@ function animate(time) {
       accelerate-=1;
       car.rotateX(accelerate*0.00015)
     }
-    speed-=speed*0.7*0.016564/6;
+    speed-=speed*0.7*0.016564/6 -(left*speed*factor)-(right*speed*factor);
   }
   if ( keys.s && speed>0 ){
     if(speed>=1){
-      speed -=speed*3*0.016564/6;
+      speed -=speed*2*0.016564/6;
     }
     if(speed<1){
        speed-=0.01;
@@ -452,16 +444,37 @@ function animate(time) {
         else if(car.rotation.z<0){
             car.rotateZ(0.005)
         }
+        if(car.rotation.z<0.01 && car.rotation.z>-0.01){
+          car.rotation.z=0;
+        }
+      }
+      if((accelerate==0 && deccelerate==0) && car.rotation.x!=0){
+        if(car.rotation.x>0){
+          car.rotateX(-0.005)
+        }
+        else if(car.rotation.x<0){
+            car.rotateX(0.005)
+        }
+        if(car.rotation.x<0.01 && car.rotation.x>-0.01){
+          car.rotation.x=0;
+        }
+      }
+      if((right==0 && left==0) && FrontLeftGroup.rotation.y!=0 || FrontRightGroup.rotation.y!=0){
+        FrontLeftGroup.rotation.y=0;
+        FrontRightGroup.rotation.y=0;
       }
     }
-    
   }
+
+    
+  
+
   
 
 SpeedoMeter.innerHTML = parseInt(speed*27) + " KPH";
 Gears.innerHTML = "Gear: " + gear;
-timer.innerHTML = "Laptime: " + parseInt(laptime/100);
-laptime+=laptime
+timer.innerHTML = laptime;
+//laptime+=1
 
     a.lerp(porsche.position,0.7);
     b.copy(goal.position);
@@ -471,8 +484,7 @@ laptime+=laptime
     goal.position.lerp(temp, 0.04); //accelerate
     temp.setFromMatrixPosition(follow.matrixWorld);
     camera.lookAt( porsche.position );
-    renderer.render( scene, camera );
-  renderer.render(scene, camera); // render the scene
+    renderer.render(scene, camera); // render the scene
   stats.end();
 }
 window.addEventListener('DOMContentLoaded', () => {
