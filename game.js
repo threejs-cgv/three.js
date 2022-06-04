@@ -1,7 +1,8 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js";
 import{GLTFLoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/GLTFLoader.js";
 import{RGBELoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/RGBELoader.js";
-
+import{OrbitControls} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js";
+import {collisionVec} from './collision.js';
 
 var goal, keys, follow;
 
@@ -25,10 +26,33 @@ let laptime=0;
 let fpv=false;
 let Vee=8;
 
+
+function formatVec(){
+  const nadia=[]
+  for(var i=0;i<collisionVec.length-3;i+=3){
+    var tempvec=new THREE.Vector3();
+      tempvec.x=collisionVec[i]*2;
+      tempvec.y=collisionVec[i+1];
+      tempvec.z=collisionVec[i+2]*2;
+      nadia.push(tempvec)
+  }
+  return nadia;
+}
+const newvec=formatVec()
+console.log(newvec)
+
+
+
+
 const renderer = new THREE.WebGLRenderer({
   antialias: true
 });
+const camera1 = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+const controls = new OrbitControls( camera1, renderer.domElement );
 
+//controls.update() must be called after any manual changes to the camera's transform
+camera1.position.set( 0, 20, 100 );
+controls.update();
 
 const textureLoader=new THREE.TextureLoader();
 const grassBaseColor=textureLoader.load('./assets/GrassTexture/Grass_001_COLOR.jpg');
@@ -56,7 +80,6 @@ driverCamera.lookAt( 0,1.3,10 );
 
 let Playercamera = camera;
 
-
 const light = new THREE.AmbientLight( 0x0f0f0f ); // soft white light
 scene.add( light );
 const directionalLight = new THREE.DirectionalLight( 0xffffff, 1.0);
@@ -74,6 +97,16 @@ directionalLight.shadow.camera.bottom = - d;
 directionalLight.shadow.bias=-0.0001
 scene.add( directionalLight );
 
+const collisionCube=new THREE.Mesh(
+  new THREE.BoxGeometry(1,1,1),
+  new THREE.MeshBasicMaterial({color:'red'})
+)
+
+for(var i=0;i<newvec.length;i++){
+  var cubetemp=collisionCube.clone()
+        cubetemp.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
+        scene.add(cubetemp)
+}
 
 grassBaseColor.wrapS = THREE.RepeatWrapping;
 grassBaseColor.wrapT = THREE.RepeatWrapping;
@@ -132,7 +165,7 @@ let RearRightWheel
 let car
 let grass
 const loader=new GLTFLoader();
-
+const TestVec=[]
 rgbeLoader.load('./assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
     texture.mapping=THREE.EquirectangularReflectionMapping;
     
@@ -161,8 +194,10 @@ rgbeLoader.load('./assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
     grass=grassmodel
     gltf.scene.traverse( function( node ) {
 
-      if ( node.isMesh ) {node.receiveShadow=true }
-  
+      if ( node.isMesh ) {
+        node.receiveShadow=true; 
+      }
+      
   } );
 
     scene.add(grass)
@@ -205,6 +240,7 @@ loader.load('./assets/maple_tree/scene.gltf',function(gltf){
   tree.castShadow=true;
   scene.add(tree);
 });
+
 FrontRightGroup.position.z+=1.65;
 FrontRightGroup.position.x-=0.89;
 FrontLeftGroup.position.z+=1.65;
@@ -223,12 +259,15 @@ porsche.rotateY(-Math.PI/2 +0.15)
 porsche.scale.set(0.5,0.5,0.5)
 
 
+
 keys = {
   a: false,
   s: false,
   d: false,
   w: false,
   v: false,
+  space:false,
+  t: false
 };
 
 document.body.addEventListener( 'keydown', function(e) {
@@ -297,12 +336,11 @@ document.body.appendChild(turnBack);
 turnBack.style.color='red'
 
 
-renderer.render(scene, camera);
 
 let factor=0.00006;
 
 function animate(time) {
-  if(porsche){
+  if(time>10000){
     if ( keys.w && speed<70/12){
       if(speed<=9.2/12){
         speed+=5*0.016564/12-(left*speed*factor)-(right*speed*factor)
@@ -521,7 +559,7 @@ function animate(time) {
         Vee=8
       }
       else if(!fpv && Vee==0){
-        Playercamera=driverCamera
+        Playercamera=camera1
         fpv=true;
         SpeedoMeter.style.color='white'
         Gears.style.color='white'
@@ -553,6 +591,16 @@ function animate(time) {
      if((porsche.position.x>700 || porsche.position.x<-600)){
         speed=speed/2
         porsche.position.x=0
+      }
+
+      if(keys.space){ 
+        var cubetemp=collisionCube.clone()
+        cubetemp.position.set(porsche.position.x,porsche.position.y,porsche.position.z)
+        collisionVec.push(cubetemp.position)
+        scene.add(cubetemp)
+      }
+      if(keys.t){
+        console.log(collisionVec)
       }
      
   
