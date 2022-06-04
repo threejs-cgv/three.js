@@ -20,7 +20,8 @@
   "dependencies": {
     "dat.gui": "^0.7.9",
     "stats.js": "^0.17.0",
-    "three": "^0.140.2"
+    "three": "^0.140.2",
+    "three-csm": "^1.1.1"
   },
   "devDependencies": {
     "@parcel/config-default": "^2.6.0",
