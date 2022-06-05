@@ -3,12 +3,7 @@ import{GLTFLoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/l
 import{RGBELoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/RGBELoader.js";
 import{OrbitControls} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js";
 import {collisionVec} from './collision.js';
-
-//classes
-
-
-
-
+import{FBXLoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/FBXLoader.js";
 
 var goal, keys, follow;
 
@@ -112,8 +107,10 @@ const collisionCube=new THREE.Mesh(
 
 // ADD COINS TO THE SCENE
 
+
 let coins=[] ;
-var arr_coin =[3,6,9,12,15,-3,-6,-9,-12];
+let coin;
+var arr_coin =[6,9,12,15,-3,-6,-9,-12];
   const cubetemp=new GLTFLoader();
   for(let i = 0 ; i< arr_coin.length;i++){
   cubetemp.load("./assets/Coins/coin1.glb",function(gltf){
@@ -125,7 +122,7 @@ var arr_coin =[3,6,9,12,15,-3,-6,-9,-12];
 
 
 
- var coin = gltf.scene;
+    coin = gltf.scene;
     
    coin.scale.set(0.2,0.2,0.2);
    
@@ -133,6 +130,7 @@ var arr_coin =[3,6,9,12,15,-3,-6,-9,-12];
     coins.push(coin)
     coin.castShadow=true;
     coin.rotateZ(90/Math.PI*180);
+    coins.push(coin)
     scene.add(coin);
    
  
@@ -145,24 +143,8 @@ var arr_coin =[3,6,9,12,15,-3,-6,-9,-12];
   })
 }
 
-// check collision between car and coin
-function isColliding(obj1, obj2){
-  return (
-    Math.abs(obj1- obj2.position.x) < 10
-  )
-}
 
-function checkCollisions(car){
-  
-  arr_coin.forEach(coin => {
 
-        if(isColliding(coin,car)){
-          scene.remove(coin)
-        }
-      
-    })
-  
-}
 
 grassBaseColor.wrapS = THREE.RepeatWrapping;
 grassBaseColor.wrapT = THREE.RepeatWrapping;
@@ -394,6 +376,35 @@ turnBack.style.color='red'
 
 
 let factor=0.00006;
+
+// check collision between car and granade
+var fbxloader= new FBXLoader();
+let granade;
+fbxloader.load("./assets/Granade/MK2.fbx",function(obj){
+  obj.position.set(3,0.5,0)
+  obj.scale.multiplyScalar(0.05);
+
+   granade=obj;
+  scene.add(granade)
+})
+
+function isColliding(obj1, obj2){
+
+  return (
+    
+    Math.abs(obj1.position.x- obj2.position.x) < 0.5 )
+}
+
+function checkCollisions(obj1,car){
+  
+
+        if(isColliding(obj1,car)){
+        console.log("collided")
+         scene.remove(obj1)
+        }
+  
+}
+
 
 function animate(time) {
   if(time>10000){
@@ -679,8 +690,22 @@ function animate(time) {
       goal.position.lerp(temp, 0.04); //accelerate
   
       temp.setFromMatrixPosition(follow.matrixWorld);
-      if(car){
-        checkCollisions(car);}
+      if(porsche){
+        if(isColliding(granade,porsche)){
+          
+          scene.remove(granade)
+        }
+        }
+
+        if(porsche){
+     
+          if(isColliding(coin,porsche)){
+        
+            scene.remove(coin)
+          }
+          
+      
+        }
       camera.lookAt( porsche.position );
       renderer.render(scene, Playercamera); // render the scene
   }
