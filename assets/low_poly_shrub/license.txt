@@ -1,0 +1,11 @@
+Model Information:
+* title:	Low Poly Shrub
+* source:	https://sketchfab.com/3d-models/low-poly-shrub-6df4edd22c9a4fb89b50e36c3257352c
+* author:	Chanti (https://sketchfab.com/estevezmary1)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Low Poly Shrub" (https://sketchfab.com/3d-models/low-poly-shrub-6df4edd22c9a4fb89b50e36c3257352c) by Chanti (https://sketchfab.com/estevezmary1) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

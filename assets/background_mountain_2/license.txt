@@ -1,0 +1,11 @@
+Model Information:
+* title:	background mountain #2
+* source:	https://sketchfab.com/3d-models/background-mountain-2-4708e2e5d6144807ab800cb3930a0642
+* author:	j4k8b (https://sketchfab.com/j4k8b)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "background mountain #2" (https://sketchfab.com/3d-models/background-mountain-2-4708e2e5d6144807ab800cb3930a0642) by j4k8b (https://sketchfab.com/j4k8b) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
