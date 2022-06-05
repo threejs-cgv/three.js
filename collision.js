@@ -1,4 +1,4 @@
-const collisionVec= [
+export const collisionVec= [
     170.64891052246094,
     0.44533392786979675,
     0.2398938685655594,

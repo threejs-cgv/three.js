@@ -4,6 +4,12 @@ import{RGBELoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/l
 import{OrbitControls} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js";
 import {collisionVec} from './collision.js';
 
+//classes
+
+
+
+
+
 var goal, keys, follow;
 
 var temp = new THREE.Vector3;
@@ -102,10 +108,60 @@ const collisionCube=new THREE.Mesh(
   new THREE.MeshBasicMaterial({color:'red'})
 )
 
-for(var i=0;i<newvec.length;i++){
-  var cubetemp=collisionCube.clone()
-        cubetemp.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
-        scene.add(cubetemp)
+
+
+// ADD COINS TO THE SCENE
+
+let coins=[] ;
+var arr_coin =[3,6,9,12,15,-3,-6,-9,-12];
+  const cubetemp=new GLTFLoader();
+  for(let i = 0 ; i< arr_coin.length;i++){
+  cubetemp.load("./assets/Coins/coin1.glb",function(gltf){
+    gltf.scene.traverse( function( node ) {
+
+      if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+  
+  } );
+
+
+
+ var coin = gltf.scene;
+    
+   coin.scale.set(0.2,0.2,0.2);
+   
+    coin.position.set(arr_coin[i],0.5,0)
+    coins.push(coin)
+    coin.castShadow=true;
+    coin.rotateZ(90/Math.PI*180);
+    scene.add(coin);
+   
+ 
+  
+   // 
+   // 
+    
+    //gltf.scene.position.set(newvec[0].x,newvec[0].y,newvec[0].z)
+ 
+  })
+}
+
+// check collision between car and coin
+function isColliding(obj1, obj2){
+  return (
+    Math.abs(obj1- obj2.position.x) < 10
+  )
+}
+
+function checkCollisions(car){
+  
+  arr_coin.forEach(coin => {
+
+        if(isColliding(coin,car)){
+          scene.remove(coin)
+        }
+      
+    })
+  
 }
 
 grassBaseColor.wrapS = THREE.RepeatWrapping;
@@ -519,6 +575,7 @@ function animate(time) {
   
     //undo any body tilt that hasnt been untilted (simulate suspension rightening)
     if(car){
+      //checkCollisions(car);
       if((right==0 && left==0) || speed==0){
         if(car.rotation.z!=0){
           if(car.rotation.z>0){
@@ -622,6 +679,8 @@ function animate(time) {
       goal.position.lerp(temp, 0.04); //accelerate
   
       temp.setFromMatrixPosition(follow.matrixWorld);
+      if(car){
+        checkCollisions(car);}
       camera.lookAt( porsche.position );
       renderer.render(scene, Playercamera); // render the scene
   }
