@@ -33,7 +33,6 @@ let Vee=8;
 var space=0;
 
 
-
 const renderer = new THREE.WebGLRenderer({
   antialias: true
 });
@@ -208,21 +207,36 @@ let skyboxGeo = new THREE.BoxGeometry(5000,5000,5000);
 let skybox=new THREE.Mesh(skyboxGeo,materialArray);
 scene.add(skybox)
 
+const progressBar = document.getElementById('progress-bar');
 
 
+const loadingManager = new THREE.LoadingManager();
+
+// loadingManager.onStart = function ( url, itemsLoaded, itemsTotal ) {
+//     console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+// }; // called when loading starts
+
+loadingManager.onProgress = function ( item, loaded, total ) {
+  progressBar.value = loaded / total * 100;
+}; // called when an item has been loaded
+
+const progressBarContainer = document.querySelector('.progress-bar-container');
+loadingManager.onLoad = function () {
+  progressBarContainer.style.display = 'none';
+}; // called when all items have been loaded
 
 
 const porsche=new THREE.Group();
 const FrontLeftGroup= new THREE.Group();
 const FrontRightGroup= new THREE.Group();
-const rgbeLoader= new RGBELoader();
+const rgbeLoader= new RGBELoader(loadingManager);
 let FrontRightWheel
 let FrontLeftWheel
 let RearLeftWheel
 let RearRightWheel
 let car
 let grass
-const loader=new GLTFLoader();
+const loader=new GLTFLoader(loadingManager);
 const TestVec=[]
 rgbeLoader.load('./assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
     texture.mapping=THREE.EquirectangularReflectionMapping;
