@@ -63,6 +63,10 @@ const grassNorm=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_nor
 const grassOcc=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_ambientOcclusion.jpg');
 const grassRough=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_roughness.jpg');
 
+let start=new Date();
+let startTime=start.getTime();
+
+
 
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
@@ -467,6 +471,7 @@ porsche.scale.set(0.5,0.5,0.5)
 
 
 
+
 keys = {
   a: false,
   s: false,
@@ -475,7 +480,8 @@ keys = {
   v: false,
   space:false,
   t: false,
-  p:false
+  p:false,
+  x:false
 };
 
 document.body.addEventListener( 'keydown', function(e) {
@@ -523,6 +529,39 @@ function findThreeClosest(targetPos){
       }
     }
     return false
+}
+
+function ToTime(x){
+    var time=""
+    var temptime=x
+    var minutes=0
+    var seconds=0
+    var milliseconds=0
+    while(temptime>100){
+      temptime=temptime-100
+      seconds++
+    }
+    minutes=Math.floor(seconds/60)
+    if(minutes<10){
+      minutes="0"+minutes
+    }
+    while(seconds>59){
+      seconds=seconds-60
+    }
+    if(seconds<10){
+      seconds="0"+seconds
+    }
+    milliseconds=x
+    while(milliseconds>99){
+      milliseconds=milliseconds-100
+    }
+    if(milliseconds<10){
+      milliseconds="0"+milliseconds
+    }
+   
+    time=minutes+":"+seconds+":"+milliseconds
+    return time;
+
 }
 
 
@@ -889,14 +928,22 @@ function animate(time) {
        console.log(collisionVec2)
       }
 
+   
+        let end=new Date()
+        let endTime=Math.trunc((end.getTime()-startTime)/10)
+        timer.innerHTML = ToTime(endTime);
 
-     
-  
+
 
       
-  SpeedoMeter.innerHTML = parseInt(speed*54) + " KPH";
-  Gears.innerHTML = "Gear: " + gear
-  timer.innerHTML = laptime;
+     
+
+      SpeedoMeter.innerHTML = parseInt(speed*54) + " KPH";
+      Gears.innerHTML = "Gear: " + gear
+     
+
+
+
       a.lerp(porsche.position,0.7);
       b.copy(goal.position);
       dir.copy( a ).sub( b ).normalize();
