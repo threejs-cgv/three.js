@@ -8,6 +8,7 @@ import {lowPolyTreeVec} from './collision.js';
 import {shrubVec} from './collision.js';
 import {antennaVec} from './collision.js';
 import {flagVec} from './collision.js';
+import {Stats} from './FPS.js'
 
 var goal, keys, follow;
 var collisionVec2=[]
@@ -32,6 +33,9 @@ let fpv=false;
 let Vee=8;
 var space=0;
 
+var stats = new Stats();
+stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
+document.body.appendChild( stats.dom );
 
 const renderer = new THREE.WebGLRenderer({
   antialias: true
@@ -72,8 +76,8 @@ directionalLight.position.set(180,100,300);
 directionalLight.target.position.set(180,0,200)
 directionalLight.castShadow=true;
 //Set up shadow properties for the light
-directionalLight.shadow.mapSize.width = 1024*3000; // default
-directionalLight.shadow.mapSize.height = 1024*3000; // default
+directionalLight.shadow.mapSize.width = 1024*2000; // default
+directionalLight.shadow.mapSize.height = 1024*2000; // default
 var d = 450;
 directionalLight.shadow.camera.left = - d;
 directionalLight.shadow.camera.right = d;
@@ -170,7 +174,7 @@ grassBaseColor.wrapT = THREE.RepeatWrapping;
 grassBaseColor.repeat.set( 7000, 7000 );
 
 const planeGeometry = new THREE.PlaneGeometry(1500, 1000,1,1); // create a plane
-const planeMaterial = new THREE.MeshPhongMaterial({
+const planeMaterial = new THREE.MeshStandardMaterial({
     map:grassBaseColor
 
 });
@@ -207,36 +211,21 @@ let skyboxGeo = new THREE.BoxGeometry(5000,5000,5000);
 let skybox=new THREE.Mesh(skyboxGeo,materialArray);
 scene.add(skybox)
 
-const progressBar = document.getElementById('progress-bar');
 
 
-const loadingManager = new THREE.LoadingManager();
-
-// loadingManager.onStart = function ( url, itemsLoaded, itemsTotal ) {
-//     console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
-// }; // called when loading starts
-
-loadingManager.onProgress = function ( item, loaded, total ) {
-  progressBar.value = loaded / total * 100;
-}; // called when an item has been loaded
-
-const progressBarContainer = document.querySelector('.progress-bar-container');
-loadingManager.onLoad = function () {
-  progressBarContainer.style.display = 'none';
-}; // called when all items have been loaded
 
 
 const porsche=new THREE.Group();
 const FrontLeftGroup= new THREE.Group();
 const FrontRightGroup= new THREE.Group();
-const rgbeLoader= new RGBELoader(loadingManager);
+const rgbeLoader= new RGBELoader();
 let FrontRightWheel
 let FrontLeftWheel
 let RearLeftWheel
 let RearRightWheel
 let car
 let grass
-const loader=new GLTFLoader(loadingManager);
+const loader=new GLTFLoader();
 const TestVec=[]
 rgbeLoader.load('./assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
     texture.mapping=THREE.EquirectangularReflectionMapping;
@@ -567,6 +556,7 @@ let factor=0.00006;
 
 function animate(time) {
   if(time>10000){
+    stats.begin()
     if ( keys.w && speed<70/12){
       if(speed<=9.2/12){
         speed+=5*0.016564/12-(left*speed*factor)-(right*speed*factor)
@@ -757,20 +747,20 @@ function animate(time) {
             car.rotation.z=0;
           }
         }
-        if((accelerate==0 && deccelerate==0) && car.rotation.x!=0){
-          if(car.rotation.x>0){
-            car.rotateX(-0.008)
-          }
-          else if(car.rotation.x<0){
-              car.rotateX(0.008)
-          }
-          if(car.rotation.x<0.01 && car.rotation.x>-0.01){
-            car.rotation.x=0;
-          }
-        }
         if(((right==0 && left==0) && FrontLeftGroup.rotation.y!=0 || FrontRightGroup.rotation.y!=0) && speed!=0){
           FrontLeftGroup.rotation.y=0;
           FrontRightGroup.rotation.y=0;
+        }
+      }
+      if((accelerate==0 && deccelerate==0) && car.rotation.x!=0){
+        if(car.rotation.x>0){
+          car.rotateX(-0.008)
+        }
+        else if(car.rotation.x<0){
+            car.rotateX(0.008)
+        }
+        if(car.rotation.x<0.01 && car.rotation.x>-0.01){
+          car.rotation.x=0;
         }
       }
     }
@@ -859,7 +849,7 @@ function animate(time) {
       camera.lookAt( porsche.position );
       renderer.render(scene, Playercamera); // render the scene
   }
-  
+  stats.end();
 }
 window.addEventListener('DOMContentLoaded', () => {
   renderer.setAnimationLoop(animate);
