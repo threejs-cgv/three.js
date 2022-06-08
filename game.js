@@ -452,6 +452,19 @@ loader.load('./assets/metal_advertising_billboard_single_sided/scene.gltf',funct
 
 
 });
+
+const cube1=new THREE.Mesh(
+  new THREE.BoxGeometry(2,1,4.65),
+  //new THREE.MeshPhongMaterial({color:0xff0000})
+)
+
+cube1.translateZ(0.23)
+let cube1BB= new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
+cube1BB.setFromObject(cube1)
+
+var cubeID=cube1.uuid
+cube1.visible=false
+
 FrontRightGroup.position.z+=1.65;
 FrontRightGroup.position.x-=0.89;
 FrontLeftGroup.position.z+=1.65;
@@ -463,6 +476,7 @@ porsche.add( follow );
 goal.translateZ(-10);
 goal.add( camera );
 porsche.add(driverCamera)
+porsche.add(cube1)
 porsche.castShadow=true;
 porsche.receiveShadow=true;
 scene.add( porsche );
@@ -514,22 +528,6 @@ function distanceVector( v1, v2 )
     return Math.sqrt( dx * dx + dy * dy + dz * dz );
 }
 
-function findThreeClosest(targetPos){
-  var returnVec=[]
-  var formattedVec= bigVec
-  var close1=formattedVec[0];
-  var temp1;
-  
-    for(var i=0;i<formattedVec.length-3;i++){
-      temp1=formattedVec[i];
-      if(distanceVector(temp1,targetPos)<5){
-        close1=temp1
-        returnVec.push(close1)
-        return true
-      }
-    }
-    return false
-}
 
 function ToTime(x){
     var time=""
@@ -573,7 +571,7 @@ function CullTrees(currpos,drawdist){
       && distanceVector(node.position,currpos)<2000) &&
        node.uuid!=groundID && node.uuid!=porscheID && 
        node.uuid!=wheel1ID && node.uuid!=wheel2ID &&
-        node.uuid!=wheel3ID && node.uuid!=wheel4ID){
+        node.uuid!=wheel3ID && node.uuid!=wheel4ID && node.uuid!=cubeID){
         node.visible=false
       }
       else{
@@ -582,7 +580,7 @@ function CullTrees(currpos,drawdist){
       if((distanceVector(node.position,currpos)>drawdist/2)  &&
       node.uuid!=groundID && node.uuid!=porscheID && 
       node.uuid!=wheel1ID && node.uuid!=wheel2ID &&
-       node.uuid!=wheel3ID && node.uuid!=wheel4ID){
+       node.uuid!=wheel3ID && node.uuid!=wheel4ID && node.uuid!=cubeID){
         node.traverse( function( node1 ) {
 
           if ( node1.isMesh ) { node1.castShadow = false; node1.receiveShadow=false}
@@ -601,6 +599,34 @@ function CullTrees(currpos,drawdist){
     }
 
 } );
+}
+
+var collide=formatTreeVec()
+  .concat(formatLowPolyTreeVec())
+  .concat(new THREE.Vector3(166.56489426840827,
+    0,
+    27.612372137162442))
+    .concat(
+      new THREE.Vector3(-40.44950625736646,
+        0,
+        -6.705652492031376)
+    ).concat(
+      new THREE.Vector3(-38.60344897137225,
+        0,
+        21.735722390031476)).concat(
+        formatVec(antennaVec)
+      )
+
+
+function checkCollisions(){
+  for(var i=0;i<collide.length;i++){
+    if(distanceVector(porsche.position,collide[i])<5){
+      if(cube1BB.containsPoint(collide[i])){
+        return true;
+      }
+    }
+  }
+  return false
 }
 
 var SpeedoMeter = document.createElement('div');
@@ -656,7 +682,23 @@ function animate(time) {
     counter=0
   }
   if(time>10000){
+    //console.log(speed)
     stats.begin()
+    cube1BB.copy(cube1.geometry.boundingBox).applyMatrix4(cube1.matrixWorld);
+      //console.log(cube1BB)
+      if(checkCollisions()){
+
+        if(speed>0){
+          porsche.translateZ(-speed/2)
+        }
+        else if(speed<0){
+          porsche.translateZ(-speed/2)
+        }
+        speed=0
+        
+        
+      }
+
     if ( keys.w && speed<70/12){
       if(speed<=9.2/12){
         speed+=5*0.016564/12-(left*speed*factor)-(right*speed*factor)
@@ -929,21 +971,15 @@ function animate(time) {
       }
 
    
-        let end=new Date()
-        let endTime=Math.trunc((end.getTime()-startTime)/10)
-        timer.innerHTML = ToTime(endTime);
-
-
-
-      
-     
-
+      let end=new Date()
+      let endTime=Math.trunc((end.getTime()-startTime)/10)
+      timer.innerHTML = ToTime(endTime);
       SpeedoMeter.innerHTML = parseInt(speed*54) + " KPH";
       Gears.innerHTML = "Gear: " + gear
      
 
 
-
+      
       a.lerp(porsche.position,0.7);
       b.copy(goal.position);
       dir.copy( a ).sub( b ).normalize();
