@@ -5,7 +5,7 @@
   "main": "game.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "doc":"jsdoc -c jsdoc.json game.js"
+    "doc":"jsdoc -c jsdoc.json C:/Users/Peace/Documents/Game/three.js/src/js/game.js"
   },
   "repository": {
     "type": "git",
