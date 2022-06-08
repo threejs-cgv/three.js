@@ -92,8 +92,8 @@ directionalLight.position.set(180,100,300);
 directionalLight.target.position.set(180,0,200)
 directionalLight.castShadow=true;
 //Set up shadow properties for the light
-directionalLight.shadow.mapSize.width = 1024*2000; // default
-directionalLight.shadow.mapSize.height = 1024*2000; // default
+directionalLight.shadow.mapSize.width = 1024*0; // default
+directionalLight.shadow.mapSize.height = 1024*0; // default
 var d = 450;
 directionalLight.shadow.camera.left = - d;
 directionalLight.shadow.camera.right = d;
@@ -192,10 +192,10 @@ grassBaseColor.repeat.set( 300, 300 );
 const planeGeometry = new THREE.PlaneGeometry(1500, 1000,1,1); // create a plane
 const planeMaterial = new THREE.MeshStandardMaterial({
     map:grassBaseColor,
-    normalMap:grassNorm,
-    displacementMap:grassDisp,
-    displacementScale:0.01,
-    aoMap:grassOcc,
+    //normalMap:grassNorm,
+    //displacementMap:grassDisp,
+    //displacementScale:0.01,
+    //aoMap:grassOcc,
     //roughnessMap:grassRough,
     //roughness:0.01
 
@@ -253,7 +253,7 @@ const TestVec=[]
 rgbeLoader.load('./assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
     texture.mapping=THREE.EquirectangularReflectionMapping;
     
-    scene.environment=texture;
+    //scene.environment=texture;
     
     
   loader.load('./assets/porschecar/car1.gltf',function(gltf){
@@ -324,134 +324,134 @@ loader.load('./assets/porschecar/wheel.gltf',function(gltf){
   porsche.add(RearLeftWheel);
   wheel4ID=RearLeftWheel.uuid
 });
-loader.load('./assets/maple_tree/scene.gltf',function(gltf){
-  gltf.scene.traverse( function( node ) {
+// loader.load('./assets/maple_tree/scene.gltf',function(gltf){
+//   gltf.scene.traverse( function( node ) {
 
-    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
 
-} );
-  const tree=gltf.scene;
-  tree.castShadow=true;
-  var newvec=formatTreeVec()
-  tree.scale.set(0.01,0.01,0.01)
-  for(var i=0;i<newvec.length;i+=1){
-    var newcube=tree.clone();
-    newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
-    var rand=getRandomInt(5,15)/15
-    var rot=getRandomInt(-314,314)/100
-    newcube.scale.set(rand,rand,rand)
-    newcube.rotateY(rot)
-    scene.add(newcube)
-}
-//scene.add(treeGroup)
+// } );
+//   const tree=gltf.scene;
+//   tree.castShadow=true;
+//   var newvec=formatTreeVec()
+//   tree.scale.set(0.01,0.01,0.01)
+//   for(var i=0;i<newvec.length;i+=1){
+//     var newcube=tree.clone();
+//     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
+//     var rand=getRandomInt(5,15)/15
+//     var rot=getRandomInt(-314,314)/100
+//     newcube.scale.set(rand,rand,rand)
+//     newcube.rotateY(rot)
+//     scene.add(newcube)
+// }
+// //scene.add(treeGroup)
 
-});
-loader.load('./assets/daisies/scene.gltf',function(gltf){
-  const tree=gltf.scene;
-  tree.castShadow=true;
-  var newvec=formatTreeVec()
-  tree.scale.set(0.01,0.01,0.01)
-  for(var i=0;i<newvec.length;i+=3){
-    var newcube=tree.clone();
-    newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
-    var rand=getRandomInt(5,15)/15
-    var rot=getRandomInt(-314,314)/100
-    newcube.scale.set(rand*3,0.2,rand*3)
-    newcube.rotateY(rot)
-    scene.add(newcube)
-}
-//scene.add(treeGroup)
+// });
+// loader.load('./assets/daisies/scene.gltf',function(gltf){
+//   const tree=gltf.scene;
+//   tree.castShadow=true;
+//   var newvec=formatTreeVec()
+//   tree.scale.set(0.01,0.01,0.01)
+//   for(var i=0;i<newvec.length;i+=3){
+//     var newcube=tree.clone();
+//     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
+//     var rand=getRandomInt(5,15)/15
+//     var rot=getRandomInt(-314,314)/100
+//     newcube.scale.set(rand*3,0.2,rand*3)
+//     newcube.rotateY(rot)
+//     scene.add(newcube)
+// }
+// //scene.add(treeGroup)
 
-});
-loader.load('./assets/cgv_models1.glb',function(gltf){
-  gltf.scene.traverse( function( node ) {
+// });
+// loader.load('./assets/cgv_models1.glb',function(gltf){
+//   gltf.scene.traverse( function( node ) {
 
-    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
 
-} );
-  const polytree=gltf.scene;
-  polytree.castShadow=true;
-  var newvec=formatLowPolyTreeVec()
-  for(var i=0;i<newvec.length;i++){
-    var newcube=polytree.clone();
-    newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
-    var rand=getRandomInt(5,15)/20
-    var rot=getRandomInt(-314,314)/100
-    newcube.scale.set(rand,rand,rand)
-    newcube.rotateY(rot)
-    scene.add(newcube)
-}
+// } );
+//   const polytree=gltf.scene;
+//   polytree.castShadow=true;
+//   var newvec=formatLowPolyTreeVec()
+//   for(var i=0;i<newvec.length;i++){
+//     var newcube=polytree.clone();
+//     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
+//     var rand=getRandomInt(5,15)/20
+//     var rot=getRandomInt(-314,314)/100
+//     newcube.scale.set(rand,rand,rand)
+//     newcube.rotateY(rot)
+//     scene.add(newcube)
+// }
 
-});
-loader.load('./assets/starting_line/scene.gltf',function(gltf){
-  const start=gltf.scene;
-  gltf.scene.traverse( function( node ) {
+// });
+// loader.load('./assets/starting_line/scene.gltf',function(gltf){
+//   const start=gltf.scene;
+//   gltf.scene.traverse( function( node ) {
 
-    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
 
-} );
-  start.rotateY((Math.PI/2)*1.05)
-  start.translateZ(-40)
-  start.translateX(-4.5)
-  start.translateY(1.2)
-  start.scale.set(0.08,0.05,0.05)
-  scene.add(start)
-
-
-});
-loader.load('./assets/old_antenna/scene.gltf',function(gltf){
-  const start=gltf.scene;
-  gltf.scene.traverse( function( node ) {
-
-    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
-
-} );
-  start.scale.set(0.0004,0.0004,0.0004)
-  var newvec=formatVec(antennaVec)
-  for(var i=0;i<newvec.length;i++){
-    var newcube=start.clone();
-    newcube.scale.set(0.0004,0.0004,0.0004)
-    newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
-    var rot=getRandomInt(-314,314)/100
-    newcube.rotateY(rot)
-    scene.add(newcube)
-}
-});
-loader.load('./assets/background_mountain_2/scene.gltf',function(gltf){
-  const model=gltf.scene;
-  model.scale.set(3,3,3)
-  model.rotateY(Math.PI/2)
-  var numMountains=10
-  for(var i=0;i<numMountains;i++){
-    var newcube=model.clone();
-    var rand=getRandomInt(40,50)/15
-    newcube.rotateY((2*Math.PI/numMountains)*i)
-    newcube.translateX(-3000)
-    newcube.rotateY((Math.PI/2))
-    newcube.translateZ(180)
-    newcube.scale.set(3*rand,3*rand,3*rand)
-    scene.add(newcube)
-}
-});
-loader.load('./assets/metal_advertising_billboard_single_sided/scene.gltf',function(gltf){
-  const start=gltf.scene;
-  gltf.scene.traverse( function( node ) {
-
-    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
-
-} );
-  start.rotateY((Math.PI/2)*1.05)
-  start.translateZ(-40)
-  start.translateX(-4.5)
-  start.scale.set(0.8,0.8,0.8)
-  start.position.set(166.56489426840827,
-    0,
-    27.612372137162442)
-  start.rotateY(Math.PI/2)
-  scene.add(start)
+// } );
+//   start.rotateY((Math.PI/2)*1.05)
+//   start.translateZ(-40)
+//   start.translateX(-4.5)
+//   start.translateY(1.2)
+//   start.scale.set(0.08,0.05,0.05)
+//   scene.add(start)
 
 
-});
+// });
+// loader.load('./assets/old_antenna/scene.gltf',function(gltf){
+//   const start=gltf.scene;
+//   gltf.scene.traverse( function( node ) {
+
+//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+
+// } );
+//   start.scale.set(0.0004,0.0004,0.0004)
+//   var newvec=formatVec(antennaVec)
+//   for(var i=0;i<newvec.length;i++){
+//     var newcube=start.clone();
+//     newcube.scale.set(0.0004,0.0004,0.0004)
+//     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
+//     var rot=getRandomInt(-314,314)/100
+//     newcube.rotateY(rot)
+//     scene.add(newcube)
+// }
+// });
+// loader.load('./assets/background_mountain_2/scene.gltf',function(gltf){
+//   const model=gltf.scene;
+//   model.scale.set(3,3,3)
+//   model.rotateY(Math.PI/2)
+//   var numMountains=10
+//   for(var i=0;i<numMountains;i++){
+//     var newcube=model.clone();
+//     var rand=getRandomInt(40,50)/15
+//     newcube.rotateY((2*Math.PI/numMountains)*i)
+//     newcube.translateX(-3000)
+//     newcube.rotateY((Math.PI/2))
+//     newcube.translateZ(180)
+//     newcube.scale.set(3*rand,3*rand,3*rand)
+//     scene.add(newcube)
+// }
+// });
+// loader.load('./assets/metal_advertising_billboard_single_sided/scene.gltf',function(gltf){
+//   const start=gltf.scene;
+//   gltf.scene.traverse( function( node ) {
+
+//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+
+// } );
+//   start.rotateY((Math.PI/2)*1.05)
+//   start.translateZ(-40)
+//   start.translateX(-4.5)
+//   start.scale.set(0.8,0.8,0.8)
+//   start.position.set(166.56489426840827,
+//     0,
+//     27.612372137162442)
+//   start.rotateY(Math.PI/2)
+//   scene.add(start)
+
+
+// });
 
 const cube1=new THREE.Mesh(
   new THREE.BoxGeometry(2,1,4.65),
