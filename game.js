@@ -677,7 +677,7 @@ function CullTrees(currpos,drawdist){
       
       } );
         node.receiveShadow=false
-        node.castShadow=fals
+        node.castShadow=false
       
       } 
       //white listed objects are always drawn
@@ -1345,7 +1345,7 @@ function animate(time) {
       camera.lookAt( porsche.position );
       renderer.render(scene, Playercamera); // render the scene
   }
-  
+
   stats.end();
 }
 window.addEventListener('DOMContentLoaded', () => {
