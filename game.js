@@ -370,7 +370,7 @@ loader.load('./assets/porschecar/wheel.gltf',function(gltf){
 scene.add(treeGroup)
 
 });
-/*
+
 loader.load('./assets/daisies/scene.gltf',function(gltf){
   const tree=gltf.scene;
   tree.castShadow=true;
@@ -387,7 +387,7 @@ loader.load('./assets/daisies/scene.gltf',function(gltf){
 }
 //scene.add(treeGroup)
 
-}); */
+}); 
  loader.load('./assets/cgv_models1.glb',function(gltf){
   gltf.scene.traverse( function( node ) {
 
@@ -479,6 +479,36 @@ loader.load('./assets/metal_advertising_billboard_single_sided/scene.gltf',funct
 
 });
 
+let rocks =[]
+let rockloader = new FBXLoader();
+rockloader.load("assets/Rocks/rock.fbx",
+function(obj){
+  obj.castShadow=true;
+  var newvec=formatTreeVec()
+  for(var i=0;i<newvec.length*5;i++){
+    var rock_obj=obj.clone();
+    rock_obj.scale.set(0.001,0.001,0.001)
+    var rand=getRandomInt(5,100)
+    rock_obj.position.set(newvec[i].x-rand,newvec[i].y,newvec[i].z)
+   
+    var rot=getRandomInt(-314,314)/100
+    //rock_obj.scale.set(rand*3,0.2,rand*3)
+    rock_obj.rotateY(rot)
+    rocks.push(rock_obj)
+    scene.add(rock_obj)
+  }
+  for(var i=0;i<newvec.length*5;i++){
+    var rock_obj=obj.clone();
+    rock_obj.scale.set(0.0001,0.0001,0.0001)
+    var rand=getRandomInt(5,100)
+    rock_obj.position.set(newvec[i].x,newvec[i].y,newvec[i].z-rand)
+    var rot=getRandomInt(-314,314)/100
+    //rock_obj.scale.set(rand*3,0.2,rand*3)
+    rock_obj.rotateY(rot)
+    rocks.push(rock_obj)
+    scene.add(rock_obj)
+  }
+})
 
 
 // load grenades and tnt
