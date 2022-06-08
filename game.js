@@ -76,8 +76,8 @@ directionalLight.position.set(180,100,300);
 directionalLight.target.position.set(180,0,200)
 directionalLight.castShadow=true;
 //Set up shadow properties for the light
-directionalLight.shadow.mapSize.width = 1024*2000; // default
-directionalLight.shadow.mapSize.height = 1024*2000; // default
+directionalLight.shadow.mapSize.width = 1024*5; // default
+directionalLight.shadow.mapSize.height = 1024*5; // default
 var d = 450;
 directionalLight.shadow.camera.left = - d;
 directionalLight.shadow.camera.right = d;
@@ -464,15 +464,27 @@ porsche.scale.set(0.5,0.5,0.5)
 
 
 
-keys = {
-  a: false,
-  s: false,
-  d: false,
-  w: false,
-  v: false,
+keys = { // keys
+  a: false, // left
+  s: false, // down
+  d: false, // right
+  w: false, // up
+  v: false,  
   space:false,
   t: false
 };
+
+// var button = document.createElement('button');
+// button.innerHTML = "<button onclick=\"href='index.html'\">Start</button>";
+
+// document.addEventListener( 'keydown', function ( event ) {
+//   if ( event.code == 27 ) { // esc
+//     event.preventDefault();
+//     document.getElementById("button").click();
+//     }
+// });
+
+
 
 document.body.addEventListener( 'keydown', function(e) {
   
@@ -779,7 +791,8 @@ function animate(time) {
         }
       }
     }
-  
+    
+    
     if(keys.v){
       Vee-=1;
       if(fpv && Vee==0){
