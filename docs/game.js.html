@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: game.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: game.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * @file game.js is the root file for this Racing game
  */
 
@@ -15,10 +43,10 @@ import {flagVec} from './collision.js';
 import {Stats} from './FPS.js'
 
 /**
- * @goal returns end point
- * @keys returns control keys
+ * @goal end point
+ * @keys control keys
  * @follow 
- * @collisionVec2 returns collision vector
+ * @collisionVec2 
  * @speed 
  * @a @b 
  */
@@ -132,7 +160,7 @@ const collisionCube=new THREE.Mesh(
 )
 function formatVec(vector){
   const nadia=[]
-  for(var i=0;i<vector.length-3;i+=3){
+  for(var i=0;i&lt;vector.length-3;i+=3){
     var tempvec=new THREE.Vector3();
       tempvec.x=vector[i];
       tempvec.y=vector[i+1];
@@ -144,7 +172,7 @@ function formatVec(vector){
 
 function formatTreeVec(){
   const nadia1=[]
-  for(var i=0;i<treeVec.length-3;i+=3){
+  for(var i=0;i&lt;treeVec.length-3;i+=3){
     var tempvec1=new THREE.Vector3();
       tempvec1.x=treeVec[i];
       tempvec1.y=treeVec[i+1];
@@ -156,7 +184,7 @@ function formatTreeVec(){
 //console.log(formatTreeVec().length)
 function formatLowPolyTreeVec(){
   const nadia2=[]
-  for(var i=0;i<lowPolyTreeVec.length-3;i+=3){
+  for(var i=0;i&lt;lowPolyTreeVec.length-3;i+=3){
     var tempvec1=new THREE.Vector3();
       tempvec1.x=lowPolyTreeVec[i];
       tempvec1.y=lowPolyTreeVec[i+1];
@@ -168,7 +196,7 @@ function formatLowPolyTreeVec(){
 
 function showVertices(){
   var newvec=formatVec(collisionVec)
-  for(var i=0;i<newvec.length;i++){
+  for(var i=0;i&lt;newvec.length;i++){
     var newcube=new THREE.Mesh(
       new THREE.BoxGeometry(2,1,2),
       new THREE.MeshBasicMaterial({color:i*24})
@@ -180,7 +208,7 @@ function showVertices(){
 
 function showTreeVertices(){
   var newvec=formatTreeVec()
-  for(var i=0;i<newvec.length;i++){
+  for(var i=0;i&lt;newvec.length;i++){
     var newcube=tree.clone();
     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
     scene.add(newcube)
@@ -188,10 +216,10 @@ function showTreeVertices(){
 }
 function doublevec(singlevec){
   var anothervec=[];
-  for(var i=0;i<singlevec.length-2;i+=2){
-    for(var j=0;j<singlevec.length-2;j+=2){
+  for(var i=0;i&lt;singlevec.length-2;i+=2){
+    for(var j=0;j&lt;singlevec.length-2;j+=2){
         var threevec=new THREE.Vector3();
-        if(distanceVector(singlevec[i],singlevec[j])<20){
+        if(distanceVector(singlevec[i],singlevec[j])&lt;20){
           threevec.x=(singlevec[i].x+singlevec[j].x)/2
           threevec.z=(singlevec[i].z+singlevec[j].z)/2
           threevec.y=singlevec[i].y
@@ -245,7 +273,7 @@ materialArray.push(new THREE.MeshBasicMaterial({map:texture_dn}));
 materialArray.push(new THREE.MeshBasicMaterial({map:texture_rt}));
 materialArray.push(new THREE.MeshBasicMaterial({map:texture_lf}));
 
-for(let i=0;i<6;i++){
+for(let i=0;i&lt;6;i++){
   materialArray[i].side=THREE.BackSide;
 }
 
@@ -355,7 +383,7 @@ loader.load('./assets/maple_tree/scene.gltf',function(gltf){
   tree.castShadow=true;
   var newvec=formatTreeVec()
   tree.scale.set(0.01,0.01,0.01)
-  for(var i=0;i<newvec.length;i+=1){
+  for(var i=0;i&lt;newvec.length;i+=1){
     var newcube=tree.clone();
     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
     var rand=getRandomInt(5,15)/15
@@ -372,7 +400,7 @@ loader.load('./assets/maple_tree/scene.gltf',function(gltf){
 //   tree.castShadow=true;
 //   var newvec=formatTreeVec()
 //   tree.scale.set(0.01,0.01,0.01)
-//   for(var i=0;i<newvec.length;i+=3){
+//   for(var i=0;i&lt;newvec.length;i+=3){
 //     var newcube=tree.clone();
 //     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
 //     var rand=getRandomInt(5,15)/15
@@ -393,7 +421,7 @@ loader.load('./assets/maple_tree/scene.gltf',function(gltf){
 //   const polytree=gltf.scene;
 //   polytree.castShadow=true;
 //   var newvec=formatLowPolyTreeVec()
-//   for(var i=0;i<newvec.length;i++){
+//   for(var i=0;i&lt;newvec.length;i++){
 //     var newcube=polytree.clone();
 //     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
 //     var rand=getRandomInt(5,15)/20
@@ -429,7 +457,7 @@ loader.load('./assets/maple_tree/scene.gltf',function(gltf){
 // } );
 //   start.scale.set(0.0004,0.0004,0.0004)
 //   var newvec=formatVec(antennaVec)
-//   for(var i=0;i<newvec.length;i++){
+//   for(var i=0;i&lt;newvec.length;i++){
 //     var newcube=start.clone();
 //     newcube.scale.set(0.0004,0.0004,0.0004)
 //     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
@@ -443,7 +471,7 @@ loader.load('./assets/maple_tree/scene.gltf',function(gltf){
 //   model.scale.set(3,3,3)
 //   model.rotateY(Math.PI/2)
 //   var numMountains=10
-//   for(var i=0;i<numMountains;i++){
+//   for(var i=0;i&lt;numMountains;i++){
 //     var newcube=model.clone();
 //     var rand=getRandomInt(40,50)/15
 //     newcube.rotateY((2*Math.PI/numMountains)*i)
@@ -561,20 +589,20 @@ function ToTime(x){
       seconds++
     }
     minutes=Math.floor(seconds/60)
-    if(minutes<10){
+    if(minutes&lt;10){
       minutes="0"+minutes
     }
     while(seconds>59){
       seconds=seconds-60
     }
-    if(seconds<10){
+    if(seconds&lt;10){
       seconds="0"+seconds
     }
     milliseconds=x
     while(milliseconds>99){
       milliseconds=milliseconds-100
     }
-    if(milliseconds<10){
+    if(milliseconds&lt;10){
       milliseconds="0"+milliseconds
     }
    
@@ -589,19 +617,19 @@ function CullTrees(currpos,drawdist){
   scene.traverse( function( node ) {
     if ( node instanceof THREE.Group ) {
       if((distanceVector(node.position,currpos)>drawdist
-      && distanceVector(node.position,currpos)<2000) &&
-       node.uuid!=groundID && node.uuid!=porscheID && 
-       node.uuid!=wheel1ID && node.uuid!=wheel2ID &&
-        node.uuid!=wheel3ID && node.uuid!=wheel4ID && node.uuid!=cubeID){
+      &amp;&amp; distanceVector(node.position,currpos)&lt;2000) &amp;&amp;
+       node.uuid!=groundID &amp;&amp; node.uuid!=porscheID &amp;&amp; 
+       node.uuid!=wheel1ID &amp;&amp; node.uuid!=wheel2ID &amp;&amp;
+        node.uuid!=wheel3ID &amp;&amp; node.uuid!=wheel4ID &amp;&amp; node.uuid!=cubeID){
         node.visible=false
       }
       else{
         node.visible=true
       }
-      if((distanceVector(node.position,currpos)>drawdist/2)  &&
-      node.uuid!=groundID && node.uuid!=porscheID && 
-      node.uuid!=wheel1ID && node.uuid!=wheel2ID &&
-       node.uuid!=wheel3ID && node.uuid!=wheel4ID && node.uuid!=cubeID){
+      if((distanceVector(node.position,currpos)>drawdist/2)  &amp;&amp;
+      node.uuid!=groundID &amp;&amp; node.uuid!=porscheID &amp;&amp; 
+      node.uuid!=wheel1ID &amp;&amp; node.uuid!=wheel2ID &amp;&amp;
+       node.uuid!=wheel3ID &amp;&amp; node.uuid!=wheel4ID &amp;&amp; node.uuid!=cubeID){
         node.traverse( function( node1 ) {
 
           if ( node1.isMesh ) { node1.castShadow = false; node1.receiveShadow=false}
@@ -640,8 +668,8 @@ var collide=formatTreeVec()
 
 
 function checkCollisions(){
-  for(var i=0;i<collide.length;i++){
-    if(distanceVector(porsche.position,collide[i])<5){
+  for(var i=0;i&lt;collide.length;i++){
+    if(distanceVector(porsche.position,collide[i])&lt;5){
       if(cube1BB.containsPoint(collide[i])){
         return true;
 
@@ -733,27 +761,27 @@ function animate(time) {
         if(speed>0){
           porsche.translateZ(-speed/2)
         }
-        else if(speed<0){
+        else if(speed&lt;0){
           porsche.translateZ(-speed/2)
         }
         speed=0
       }
 
-    if ( keys.w && speed<70/12){
+    if ( keys.w &amp;&amp; speed&lt;70/12){
       loadSound("assets/Sounds/driving.mp3",0.5)
-      if(speed<=9.2/12){
+      if(speed&lt;=9.2/12){
         speed+=5*0.016564/12-(left*speed*factor)-(right*speed*factor)
       }
-      else if(speed<=27.77/12 && speed>9.2/12){
+      else if(speed&lt;=27.77/12 &amp;&amp; speed>9.2/12){
         speed+=3.7*0.016564/12-(left*speed*factor)-(right*speed*factor)
       }
-      else if(speed>27.77/12 && speed<=44.444/12){
+      else if(speed>27.77/12 &amp;&amp; speed&lt;=44.444/12){
         speed+=1.35*0.016564/12-(left*speed*factor)-(right*speed*factor)
       }
-      else if(speed>44.444/12 && speed<=60.555/12){
+      else if(speed>44.444/12 &amp;&amp; speed&lt;=60.555/12){
         speed+=1.15*0.016564/12-(left*speed*factor)-(right*speed*factor)
       }
-      else if(speed>60.555/12 && speed<63/12){
+      else if(speed>60.555/12 &amp;&amp; speed&lt;63/12){
         speed+=0.9*0.016564/12-(left*speed*factor)-(right*speed*factor)
       }
       else if(speed>63/12){
@@ -763,7 +791,7 @@ function animate(time) {
       if(speed>64/12){
         speed-=Math.random()*0.016564/12*0.5
       }
-      if(accelerate<17){
+      if(accelerate&lt;17){
         accelerate+=1;
         car.rotateX(-accelerate*0.00015)
       }
@@ -778,23 +806,23 @@ function animate(time) {
       }
       speed-=speed*0.7*0.016564/12 -(left*speed*factor)-(right*speed*factor);
     }
-    if ( keys.s && speed>0 ){
+    if ( keys.s &amp;&amp; speed>0 ){
       loadSound("assets/Sounds/abrupt_stop.mp3",0.1)
       if(speed>=1){
         speed -=speed*3*0.016564/12;
       }
-      if(speed<1){
+      if(speed&lt;1){
          speed-=0.01;
       }
-      if(speed<0){
+      if(speed&lt;0){
         speed=0
         
       }
-      if(deccelerate<17 ){
+      if(deccelerate&lt;17 ){
         deccelerate+=1;
         car.rotateX(deccelerate*0.0003)
       }
-      if(reverse<35){
+      if(reverse&lt;35){
         reverse+=1
       }
     }
@@ -810,39 +838,39 @@ function animate(time) {
   
   
     //reverse
-    if(speed==0 && reverse!=0){
+    if(speed==0 &amp;&amp; reverse!=0){
       reverse-=1
     }
-    if(keys.s && speed<=0 && reverse==0 ){
+    if(keys.s &amp;&amp; speed&lt;=0 &amp;&amp; reverse==0 ){
       loadSound("assets/Sounds/driving.mp3",0.5)
-      if(speed>-1 && speed<=0){
+      if(speed>-1 &amp;&amp; speed&lt;=0){
         speed-=1*0.016564/12
       }
     }
   
   
-    if(speed<0 && !keys.w){
+    if(speed&lt;0 &amp;&amp; !keys.w){
       gear='R'
     }
-    else if((speed<=12/12&& gear!=1) || (gear=='R' && speed<0)){
+    else if((speed&lt;=12/12&amp;&amp; gear!=1) || (gear=='R' &amp;&amp; speed&lt;0)){
       gear='1'
     }
-    else if(speed<=27.77/12 && speed>12/12 && gear!=2){
+    else if(speed&lt;=27.77/12 &amp;&amp; speed>12/12 &amp;&amp; gear!=2){
       gear='2'
     }
-    else if(speed>27.77/12 && speed<=37.444/12 && gear!=3){
+    else if(speed>27.77/12 &amp;&amp; speed&lt;=37.444/12 &amp;&amp; gear!=3){
       gear='3'
     }
-    else if(speed>37.444/12 && speed<=55.555/12 && gear!=4){
+    else if(speed>37.444/12 &amp;&amp; speed&lt;=55.555/12 &amp;&amp; gear!=4){
       gear='4'
     }
-    else if(speed>55.555/12 && gear!=5){
+    else if(speed>55.555/12 &amp;&amp; gear!=5){
       gear='5'
     }
   
   
     //rotate wheels at appropriate speed for car
-    if(FrontRightWheel && FrontLeftWheel && car && RearLeftWheel && RearRightWheel){
+    if(FrontRightWheel &amp;&amp; FrontLeftWheel &amp;&amp; car &amp;&amp; RearLeftWheel &amp;&amp; RearRightWheel){
       FrontRightWheel.rotateX(speed*2)
       FrontLeftWheel.rotateX(-speed*2)
       RearRightWheel.rotateX(speed*2)
@@ -854,7 +882,7 @@ function animate(time) {
     porsche.translateZ( speed/4 );
   
     if ( keys.a ){
-      if(left<30 && right==0){
+      if(left&lt;30 &amp;&amp; right==0){
         loadSound("assets/Sounds/left_right_screeching.mp3",0.1)
         FrontLeftGroup.rotateY(0.03)
         FrontRightGroup.rotateY(0.03)
@@ -862,7 +890,7 @@ function animate(time) {
         left+=1
       }
       if(speed!=0)
-        if(speed<1){
+        if(speed&lt;1){
           porsche.rotateY(left*0.001*speed)
         }
         else{
@@ -870,24 +898,24 @@ function animate(time) {
         }
   
     }
-    else if(left>0 && right==0){
+    else if(left>0 &amp;&amp; right==0){
       left-=2
       FrontLeftGroup.rotateY(-0.06)
       FrontRightGroup.rotateY(-0.06)
       car.rotateZ(-speed*0.0005)
       if(speed!=0)
-        if(speed<1){
+        if(speed&lt;1){
          porsche.rotateY(left*0.001*speed)
         }
         else{
          porsche.rotateY(left*0.001)
       }
     }
-    if(left<0){
+    if(left&lt;0){
       left=0
     }
-    if ( keys.d && !keys.a && left==0){
-      if(right<30 && left==0){
+    if ( keys.d &amp;&amp; !keys.a &amp;&amp; left==0){
+      if(right&lt;30 &amp;&amp; left==0){
         loadSound("assets/Sounds/left_right_screeching.mp3",0.1)
         FrontLeftGroup.rotateY(-0.03)
         FrontRightGroup.rotateY(-0.03)
@@ -895,7 +923,7 @@ function animate(time) {
         right+=1
       }
       if(speed!=0){
-        if(speed<1){
+        if(speed&lt;1){
           porsche.rotateY(-right*0.001*speed)
         }
         else{
@@ -904,7 +932,7 @@ function animate(time) {
       }
         
     }
-    else if(right>0 && left==0){
+    else if(right>0 &amp;&amp; left==0){
       right-=2
       FrontLeftGroup.rotateY(0.06)
       FrontRightGroup.rotateY(0.06)
@@ -912,45 +940,45 @@ function animate(time) {
       car.rotateZ(speed*0.001)
   
       if(speed!=0)
-        if(speed<1){
+        if(speed&lt;1){
           porsche.rotateY(-right*0.001*speed)
         }
         else{
           porsche.rotateY(-right*0.001)
         }
     }
-    if(right<0){
+    if(right&lt;0){
       right=0
     }
    
   
     //undo any body tilt that hasnt been untilted (simulate suspension rightening)
     if(car){
-      if((right==0 && left==0) || speed==0){
+      if((right==0 &amp;&amp; left==0) || speed==0){
         if(car.rotation.z!=0){
           if(car.rotation.z>0){
             car.rotateZ(-0.005)
           }
-          else if(car.rotation.z<0){
+          else if(car.rotation.z&lt;0){
               car.rotateZ(0.005)
           }
-          if(car.rotation.z<0.01 && car.rotation.z>-0.01){
+          if(car.rotation.z&lt;0.01 &amp;&amp; car.rotation.z>-0.01){
             car.rotation.z=0;
           }
         }
-        if(((right==0 && left==0) && FrontLeftGroup.rotation.y!=0 || FrontRightGroup.rotation.y!=0) && speed!=0){
+        if(((right==0 &amp;&amp; left==0) &amp;&amp; FrontLeftGroup.rotation.y!=0 || FrontRightGroup.rotation.y!=0) &amp;&amp; speed!=0){
           FrontLeftGroup.rotation.y=0;
           FrontRightGroup.rotation.y=0;
         }
       }
-      if((accelerate==0 && deccelerate==0) && car.rotation.x!=0){
+      if((accelerate==0 &amp;&amp; deccelerate==0) &amp;&amp; car.rotation.x!=0){
         if(car.rotation.x>0){
           car.rotateX(-0.008)
         }
-        else if(car.rotation.x<0){
+        else if(car.rotation.x&lt;0){
             car.rotateX(0.008)
         }
-        if(car.rotation.x<0.01 && car.rotation.x>-0.01){
+        if(car.rotation.x&lt;0.01 &amp;&amp; car.rotation.x>-0.01){
           car.rotation.x=0;
         }
       }
@@ -958,43 +986,43 @@ function animate(time) {
   
     if(keys.v || keys.p){
       Vee-=1;
-      if(fpv && Vee==0 && !keys.p){
+      if(fpv &amp;&amp; Vee==0 &amp;&amp; !keys.p){
         Playercamera=camera
         SpeedoMeter.style.color='black'
         Gears.style.color='black'
         fpv=false;
         Vee=8
       }
-      else if(!fpv && Vee==0 && !keys.p){
+      else if(!fpv &amp;&amp; Vee==0 &amp;&amp; !keys.p){
         Playercamera=driverCamera
         fpv=true;
         SpeedoMeter.style.color='white'
         Gears.style.color='white'
         Vee=8
       }
-      else if(!orbitcam && keys.p && Vee==0){
+      else if(!orbitcam &amp;&amp; keys.p &amp;&amp; Vee==0){
         Playercamera=camera1
         orbitcam=true
         Vee=8
       }
-      else if(orbitcam && keys.p && Vee==0){
+      else if(orbitcam &amp;&amp; keys.p &amp;&amp; Vee==0){
         Playercamera=camera
         orbitcam=false
         Vee=8
       }
-      if(Vee<0){
+      if(Vee&lt;0){
         Vee=0
       }
     }
   
   
-      if((porsche.position.z>250 || porsche.position.z<-250) || (porsche.position.x>550|| porsche.position.x<-450)){
+      if((porsche.position.z>250 || porsche.position.z&lt;-250) || (porsche.position.x>550|| porsche.position.x&lt;-450)){
         turnBack.innerHTML = "OUT OF BOUNDS! TURN BACK!";
       }
       else{
         turnBack.innerHTML = "";
       }
-     if((porsche.position.z>400 || porsche.position.z<-400) || (porsche.position.x>700 || porsche.position.x<-600)){
+     if((porsche.position.z>400 || porsche.position.z&lt;-400) || (porsche.position.x>700 || porsche.position.x&lt;-600)){
         speed=speed/2
         porsche.position.z=0
         porsche.position.x=0
@@ -1047,3 +1075,26 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#goal">goal</a></li><li><a href="global.html#groundID">groundID</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.10</a> on Wed Jun 08 2022 22:13:09 GMT+0200 (South Africa Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

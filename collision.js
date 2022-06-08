@@ -1,3 +1,9 @@
+
+/**
+ * Collision Module
+ * @module collision
+ */
+
 const collisionVec= [
     170.64891052246094,
     0.44533392786979675,
