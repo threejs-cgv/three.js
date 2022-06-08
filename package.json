@@ -2,10 +2,10 @@
   "name": "threejs",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "game.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "doc":"jsdoc -c jsdoc.json C:/Users/nokno/OneDrive/Documents/GitHub/three.js/game.js"
+    "doc":"jsdoc -c jsdoc.json game.js"
   },
   "repository": {
     "type": "git",
@@ -23,7 +23,9 @@
     "stats": "^1.0.0",
     "stats.js": "^0.17.0",
     "three": "^0.140.2",
-    "three-csm": "^1.1.1"
+    "three-csm": "^1.1.1",
+    "postcss-preset-env": "^7.7.1",
+    "roving-ux": "^1.0.4"
   },
   "devDependencies": {
     "@parcel/config-default": "^2.6.0",
