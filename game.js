@@ -324,28 +324,28 @@ loader.load('./assets/porschecar/wheel.gltf',function(gltf){
   porsche.add(RearLeftWheel);
   wheel4ID=RearLeftWheel.uuid
 });
-// loader.load('./assets/maple_tree/scene.gltf',function(gltf){
-//   gltf.scene.traverse( function( node ) {
+loader.load('./assets/maple_tree/scene.gltf',function(gltf){
+  gltf.scene.traverse( function( node ) {
 
-//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
 
-// } );
-//   const tree=gltf.scene;
-//   tree.castShadow=true;
-//   var newvec=formatTreeVec()
-//   tree.scale.set(0.01,0.01,0.01)
-//   for(var i=0;i<newvec.length;i+=1){
-//     var newcube=tree.clone();
-//     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
-//     var rand=getRandomInt(5,15)/15
-//     var rot=getRandomInt(-314,314)/100
-//     newcube.scale.set(rand,rand,rand)
-//     newcube.rotateY(rot)
-//     scene.add(newcube)
-// }
-// //scene.add(treeGroup)
+} );
+  const tree=gltf.scene;
+  tree.castShadow=true;
+  var newvec=formatTreeVec()
+  tree.scale.set(0.01,0.01,0.01)
+  for(var i=0;i<newvec.length;i+=1){
+    var newcube=tree.clone();
+    newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
+    var rand=getRandomInt(5,15)/15
+    var rot=getRandomInt(-314,314)/100
+    newcube.scale.set(rand,rand,rand)
+    newcube.rotateY(rot)
+    scene.add(newcube)
+}
+//scene.add(treeGroup)
 
-// });
+});
 // loader.load('./assets/daisies/scene.gltf',function(gltf){
 //   const tree=gltf.scene;
 //   tree.castShadow=true;
@@ -623,6 +623,7 @@ function checkCollisions(){
     if(distanceVector(porsche.position,collide[i])<5){
       if(cube1BB.containsPoint(collide[i])){
         return true;
+
       }
     }
   }
@@ -675,6 +676,26 @@ turnBack.style.color='red'
 
 let factor=0.00006;
 //console.log(scene)
+
+function loadSound(){
+  let listener = new THREE.AudioListener();
+  camera.add(listener);
+
+
+  const sound = new THREE.Audio(listener);
+  let soundloader = new THREE.AudioLoader();
+  soundloader.load
+  (
+    "assets/Sounds/car-crash-sound-eefect.mp3",
+    function(buffer){
+      sound.setBuffer(buffer);
+      sound.setVolume(0.5);
+      sound.play();
+    }
+  )
+}
+
+
 function animate(time) {
   counter++;
   if(counter%30==0){
@@ -687,7 +708,7 @@ function animate(time) {
     cube1BB.copy(cube1.geometry.boundingBox).applyMatrix4(cube1.matrixWorld);
       //console.log(cube1BB)
       if(checkCollisions()){
-
+        loadSound()
         if(speed>0){
           porsche.translateZ(-speed/2)
         }
@@ -695,8 +716,6 @@ function animate(time) {
           porsche.translateZ(-speed/2)
         }
         speed=0
-        
-        
       }
 
     if ( keys.w && speed<70/12){
