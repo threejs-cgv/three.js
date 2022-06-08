@@ -719,7 +719,7 @@ function animate(time) {
       }
 
     if ( keys.w && speed<70/12){
-      loadSound("assets/Sounds/driving.mp3",0.5)
+      //loadSound("assets/Sounds/driving.mp3",0.5)
       if(speed<=9.2/12){
         speed+=5*0.016564/12-(left*speed*factor)-(right*speed*factor)
       }
@@ -758,7 +758,7 @@ function animate(time) {
       speed-=speed*0.7*0.016564/12 -(left*speed*factor)-(right*speed*factor);
     }
     if ( keys.s && speed>0 ){
-      loadSound("assets/Sounds/abrupt_stop.mp3",0.1)
+      loadSound("assets/Sounds/abrupt_stop.mp3",0.01)
       if(speed>=1){
         speed -=speed*3*0.016564/12;
       }
@@ -793,7 +793,7 @@ function animate(time) {
       reverse-=1
     }
     if(keys.s && speed<=0 && reverse==0 ){
-      loadSound("assets/Sounds/driving.mp3",0.5)
+     // loadSound("assets/Sounds/driving.mp3",0.5)
       if(speed>-1 && speed<=0){
         speed-=1*0.016564/12
       }
@@ -834,7 +834,7 @@ function animate(time) {
   
     if ( keys.a ){
       if(left<30 && right==0){
-        loadSound("assets/Sounds/left_right_screeching.mp3",0.1)
+        loadSound("assets/Sounds/left_right_screeching.mp3",0.01)
         FrontLeftGroup.rotateY(0.03)
         FrontRightGroup.rotateY(0.03)
         car.rotateZ(speed*0.0005)
@@ -867,7 +867,7 @@ function animate(time) {
     }
     if ( keys.d && !keys.a && left==0){
       if(right<30 && left==0){
-        loadSound("assets/Sounds/left_right_screeching.mp3",0.1)
+        loadSound("assets/Sounds/left_right_screeching.mp3",0.01)
         FrontLeftGroup.rotateY(-0.03)
         FrontRightGroup.rotateY(-0.03)
         car.rotateZ(-speed*0.0005)
