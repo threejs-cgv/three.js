@@ -5,10 +5,9 @@ import{OrbitControls} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/js
 import {collisionVec} from './collision.js';
 import {treeVec} from './collision.js';
 import {lowPolyTreeVec} from './collision.js';
-import {shrubVec} from './collision.js';
 import {antennaVec} from './collision.js';
-import {flagVec} from './collision.js';
 import {Stats} from './FPS.js'
+import {checkpointVec} from './collision.js'
 
 var goal, keys, follow;
 var collisionVec2=[]
@@ -25,6 +24,7 @@ var wheel1ID=''
 var wheel2ID=''
 var wheel3ID=''
 var wheel4ID=''
+var Onlap=false;
 
 let accelerate=0;
 let left=0;
@@ -40,7 +40,12 @@ let Vee=8;
 var space=0;
 var orbitcam=false;
 var counter=0
-
+let end=new Date()
+let endTime=0
+let laptimes=[]
+let checkPoints=[]
+let completedCheckpoints=[]
+let checkpointcount=0
 
 var stats = new Stats();
 stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -92,8 +97,8 @@ directionalLight.position.set(180,100,300);
 directionalLight.target.position.set(180,0,200)
 directionalLight.castShadow=true;
 //Set up shadow properties for the light
-directionalLight.shadow.mapSize.width = 1024*0; // default
-directionalLight.shadow.mapSize.height = 1024*0; // default
+directionalLight.shadow.mapSize.width = 1; // default
+directionalLight.shadow.mapSize.height = 1; // default
 var d = 450;
 directionalLight.shadow.camera.left = - d;
 directionalLight.shadow.camera.right = d;
@@ -192,10 +197,10 @@ grassBaseColor.repeat.set( 300, 300 );
 const planeGeometry = new THREE.PlaneGeometry(1500, 1000,1,1); // create a plane
 const planeMaterial = new THREE.MeshStandardMaterial({
     map:grassBaseColor,
-    //normalMap:grassNorm,
-    //displacementMap:grassDisp,
-    //displacementScale:0.01,
-    //aoMap:grassOcc,
+    normalMap:grassNorm,
+    displacementMap:grassDisp,
+    displacementScale:0.01,
+    aoMap:grassOcc,
     //roughnessMap:grassRough,
     //roughness:0.01
 
@@ -324,28 +329,28 @@ loader.load('./assets/porschecar/wheel.gltf',function(gltf){
   porsche.add(RearLeftWheel);
   wheel4ID=RearLeftWheel.uuid
 });
-loader.load('./assets/maple_tree/scene.gltf',function(gltf){
-  gltf.scene.traverse( function( node ) {
+// loader.load('./assets/maple_tree/scene.gltf',function(gltf){
+//   gltf.scene.traverse( function( node ) {
 
-    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
 
-} );
-  const tree=gltf.scene;
-  tree.castShadow=true;
-  var newvec=formatTreeVec()
-  tree.scale.set(0.01,0.01,0.01)
-  for(var i=0;i<newvec.length;i+=1){
-    var newcube=tree.clone();
-    newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
-    var rand=getRandomInt(5,15)/15
-    var rot=getRandomInt(-314,314)/100
-    newcube.scale.set(rand,rand,rand)
-    newcube.rotateY(rot)
-    scene.add(newcube)
-}
-//scene.add(treeGroup)
+// } );
+//   const tree=gltf.scene;
+//   tree.castShadow=true;
+//   var newvec=formatTreeVec()
+//   tree.scale.set(0.01,0.01,0.01)
+//   for(var i=0;i<newvec.length;i+=1){
+//     var newcube=tree.clone();
+//     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
+//     var rand=getRandomInt(5,15)/15
+//     var rot=getRandomInt(-314,314)/100
+//     newcube.scale.set(rand,rand,rand)
+//     newcube.rotateY(rot)
+//     scene.add(newcube)
+// }
+// //scene.add(treeGroup)
 
-});
+// });
 // loader.load('./assets/daisies/scene.gltf',function(gltf){
 //   const tree=gltf.scene;
 //   tree.castShadow=true;
@@ -383,22 +388,22 @@ loader.load('./assets/maple_tree/scene.gltf',function(gltf){
 // }
 
 // });
-// loader.load('./assets/starting_line/scene.gltf',function(gltf){
-//   const start=gltf.scene;
-//   gltf.scene.traverse( function( node ) {
+loader.load('./assets/starting_line/scene.gltf',function(gltf){
+  const start=gltf.scene;
+  gltf.scene.traverse( function( node ) {
 
-//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
 
-// } );
-//   start.rotateY((Math.PI/2)*1.05)
-//   start.translateZ(-40)
-//   start.translateX(-4.5)
-//   start.translateY(1.2)
-//   start.scale.set(0.08,0.05,0.05)
-//   scene.add(start)
+} );
+  start.rotateY((Math.PI/2)*1.05)
+  start.translateZ(-40)
+  start.translateX(-4.5)
+  start.translateY(1.2)
+  start.scale.set(0.08,0.05,0.05)
+  scene.add(start)
 
 
-// });
+});
 // loader.load('./assets/old_antenna/scene.gltf',function(gltf){
 //   const start=gltf.scene;
 //   gltf.scene.traverse( function( node ) {
@@ -464,6 +469,28 @@ cube1BB.setFromObject(cube1)
 
 var cubeID=cube1.uuid
 cube1.visible=false
+
+const cube2=new THREE.Mesh(
+  new THREE.BoxGeometry(1,1,30),
+  //new THREE.MeshPhongMaterial({color:0xff0000})
+)
+
+
+cube2.rotateY((Math.PI/2)*1.05)
+cube2.translateZ(-40)
+cube2.translateX(-4.5)
+cube2.rotateY(Math.PI/2)
+let cube2BB= new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
+cube2BB.setFromObject(cube2)
+
+var cube2ID=cube2.uuid
+cube2.visible=true
+//scene.add(cube2)
+
+
+let cpcVec=formatVec(checkpointVec);
+
+
 
 FrontRightGroup.position.z+=1.65;
 FrontRightGroup.position.x-=0.89;
@@ -630,52 +657,12 @@ function checkCollisions(){
   return false
 }
 
-var SpeedoMeter = document.createElement('div');
-SpeedoMeter.style.position = 'absolute';
-//SpeedoMeter.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
-SpeedoMeter.style.width = 100;
-SpeedoMeter.style.height = 100;
-SpeedoMeter.style.bottom= 50 + 'px';
-SpeedoMeter.style.left = window.innerWidth/2 + 'px';
-SpeedoMeter.style.fontSize=20
-document.body.appendChild(SpeedoMeter);
-
-var Gears = document.createElement('div');
-Gears.style.position = 'absolute';
-//SpeedoMeter.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
-Gears.style.width = 100;
-Gears.style.height = 100;
-Gears.style.bottom= 50 + 'px';
-Gears.style.left = (window.innerWidth/2) -100 + 'px';
-Gears.style.fontSize=20
-document.body.appendChild(Gears);
-
-
-var timer = document.createElement('div');
-timer.style.position = 'absolute';
-//SpeedoMeter.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
-timer.style.width = 100;
-timer.style.height = 100;
-timer.style.top= 50 + 'px';
-timer.style.left = 100 + 'px';
-timer.style.fontSize=20
-document.body.appendChild(timer);
-
-
-var turnBack = document.createElement('div');
-turnBack.style.position = 'absolute';
-//SpeedoMeter.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
-turnBack.style.width = 100;
-turnBack.style.height = 100;
-turnBack.style.top= 100 + 'px';
-turnBack.style.left = (window.innerWidth/2)-50  + 'px';;
-turnBack.style.fontSize=20
-document.body.appendChild(turnBack);
-turnBack.style.color='red'
-
-
-let factor=0.00006;
-//console.log(scene)
+function checkStartFinish(){
+if(cube1BB.intersectsBox(cube2BB)){
+  return true
+}
+return false
+}
 
 function loadSound(soundpath,volume){
   let listener = new THREE.AudioListener();
@@ -695,6 +682,89 @@ function loadSound(soundpath,volume){
   )
 }
 
+function doLap(){
+  //console.log(porsche.position,cpcVec[0])
+ if(cpcVec.length!=0){
+  if(distanceVector(porsche.position,cpcVec[0])<16){
+    cpcVec.splice(0,1)
+    checkpointcount++;
+    return true;
+  }
+ }
+ else return false
+  
+}
+
+
+var SpeedoMeter = document.createElement('div');
+SpeedoMeter.style.position = 'absolute';
+//SpeedoMeter.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+SpeedoMeter.style.width = 100;
+SpeedoMeter.style.height = 100;
+SpeedoMeter.style.bottom= 50 + 'px';
+SpeedoMeter.style.left = window.innerWidth/2 + 'px';
+SpeedoMeter.style.fontSize=20
+document.body.appendChild(SpeedoMeter);
+
+var check = document.createElement('div');
+check.style.position = 'absolute';
+//SpeedoMeter.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+check.style.width = 100;
+check.style.height = 100;
+check.style.top= 50 + 'px';
+check.style.left = window.innerWidth/2 -30 + 'px';
+check.style.fontSize=20
+document.body.appendChild(check);
+
+var Gears = document.createElement('div');
+Gears.style.position = 'absolute';
+//SpeedoMeter.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+Gears.style.width = 100;
+Gears.style.height = 100;
+Gears.style.bottom= 50 + 'px';
+Gears.style.left = (window.innerWidth/2) -100 + 'px';
+Gears.style.fontSize=20
+document.body.appendChild(Gears);
+
+
+var timer = document.createElement('div');
+timer.style.position = 'absolute';
+//SpeedoMeter.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+timer.style.width = 100;
+timer.style.height = 100;
+timer.style.top= 70 + 'px';
+timer.style.left = window.innerWidth/2 + 'px';
+timer.style.fontSize=20
+document.body.appendChild(timer);
+
+
+var turnBack = document.createElement('div');
+turnBack.style.position = 'absolute';
+//SpeedoMeter.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+turnBack.style.width = 100;
+turnBack.style.height = 100;
+turnBack.style.top= 100 + 'px';
+turnBack.style.left = (window.innerWidth/2)-50  + 'px';;
+turnBack.style.fontSize=20
+document.body.appendChild(turnBack);
+turnBack.style.color='red'
+
+var leaderBoard = document.createElement('div');
+leaderBoard.style.position = 'absolute';
+//SpeedoMeter.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+leaderBoard.style.width = 100;
+leaderBoard.style.height = 100;
+leaderBoard.style.top= 100 + 'px';
+leaderBoard.style.left = 50  + 'px';;
+leaderBoard.style.fontSize=20
+document.body.appendChild(leaderBoard);
+leaderBoard.style.color='red'
+
+
+let factor=0.00006;
+//console.log(scene)
+
+
 
 function animate(time) {
   counter++;
@@ -708,7 +778,7 @@ function animate(time) {
     cube1BB.copy(cube1.geometry.boundingBox).applyMatrix4(cube1.matrixWorld);
       //console.log(cube1BB)
       if(checkCollisions()){
-        loadSound("assets/Sounds/car-crash-sound-eefect.mp3",0.5)
+        //loadSound("assets/Sounds/car-crash-sound-eefect.mp3",0.5)
         if(speed>0){
           porsche.translateZ(-speed/2)
         }
@@ -719,7 +789,7 @@ function animate(time) {
       }
 
     if ( keys.w && speed<70/12){
-      loadSound("assets/Sounds/driving.mp3",0.5)
+      //loadSound("assets/Sounds/driving.mp3",0.5)
       if(speed<=9.2/12){
         speed+=5*0.016564/12-(left*speed*factor)-(right*speed*factor)
       }
@@ -758,7 +828,7 @@ function animate(time) {
       speed-=speed*0.7*0.016564/12 -(left*speed*factor)-(right*speed*factor);
     }
     if ( keys.s && speed>0 ){
-      loadSound("assets/Sounds/abrupt_stop.mp3",0.1)
+      //loadSound("assets/Sounds/abrupt_stop.mp3",0.1)
       if(speed>=1){
         speed -=speed*3*0.016564/12;
       }
@@ -793,7 +863,7 @@ function animate(time) {
       reverse-=1
     }
     if(keys.s && speed<=0 && reverse==0 ){
-      loadSound("assets/Sounds/driving.mp3",0.5)
+      //loadSound("assets/Sounds/driving.mp3",0.5)
       if(speed>-1 && speed<=0){
         speed-=1*0.016564/12
       }
@@ -834,7 +904,7 @@ function animate(time) {
   
     if ( keys.a ){
       if(left<30 && right==0){
-        loadSound("assets/Sounds/left_right_screeching.mp3",0.1)
+        //loadSound("assets/Sounds/left_right_screeching.mp3",0.1)
         FrontLeftGroup.rotateY(0.03)
         FrontRightGroup.rotateY(0.03)
         car.rotateZ(speed*0.0005)
@@ -867,7 +937,7 @@ function animate(time) {
     }
     if ( keys.d && !keys.a && left==0){
       if(right<30 && left==0){
-        loadSound("assets/Sounds/left_right_screeching.mp3",0.1)
+        //loadSound("assets/Sounds/left_right_screeching.mp3",0.1)
         FrontLeftGroup.rotateY(-0.03)
         FrontRightGroup.rotateY(-0.03)
         car.rotateZ(-speed*0.0005)
@@ -941,6 +1011,8 @@ function animate(time) {
         Playercamera=camera
         SpeedoMeter.style.color='black'
         Gears.style.color='black'
+        check.style.color='black'
+        timer.style.color='black'
         fpv=false;
         Vee=8
       }
@@ -949,6 +1021,8 @@ function animate(time) {
         fpv=true;
         SpeedoMeter.style.color='white'
         Gears.style.color='white'
+        check.style.color='white'
+        timer.style.color='white'
         Vee=8
       }
       else if(!orbitcam && keys.p && Vee==0){
@@ -999,15 +1073,38 @@ function animate(time) {
       }
 
    
-      let end=new Date()
-      let endTime=Math.trunc((end.getTime()-startTime)/10)
-      timer.innerHTML = ToTime(endTime);
+      
       SpeedoMeter.innerHTML = parseInt(speed*54) + " KPH";
       Gears.innerHTML = "Gear: " + gear
-     
+      check.innerHTML = "Checkpoints: " + checkpointcount+"/ 36"
+      //console.log(checkStartFinish())
+      if(checkStartFinish()){
+        if(Onlap){
+          if(checkpointcount==36){
+            laptimes.push[endTime]
+            console.log(endTime)
+            Onlap=true
+            start=new Date();
+            startTime=start.getTime()
+            if(cpcVec.length==0){
+              cpcVec=formatVec(checkpointVec)
+              checkpointcount=0 
+            }
+          }
+        }
+        else{
+          Onlap=true
+          start=new Date();
+          startTime=start.getTime()
+        }
 
-
-      
+      }
+      if(Onlap){
+        end=new Date()
+        endTime=Math.trunc((end.getTime()-startTime)/10)
+        timer.innerHTML = ToTime(endTime);
+      }
+      doLap()
       a.lerp(porsche.position,0.7);
       b.copy(goal.position);
       dir.copy( a ).sub( b ).normalize();
