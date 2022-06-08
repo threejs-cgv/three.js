@@ -1,5 +1,6 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js";
 import{GLTFLoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/GLTFLoader.js";
+import{FBXLoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/FBXLoader.js";
 import{RGBELoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/RGBELoader.js";
 import{OrbitControls} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js";
 import {collisionVec} from './collision.js';
@@ -41,6 +42,28 @@ var space=0;
 var orbitcam=false;
 var counter=0
 
+function loadSound(soundpath,volume){
+  let listener = new THREE.AudioListener();
+  camera.add(listener);
+
+
+  const sound = new THREE.Audio(listener);
+  let soundloader = new THREE.AudioLoader();
+  soundloader.load
+  (
+    soundpath,
+    function(buffer){
+      sound.setBuffer(buffer);
+      sound.setLoop(false);
+      sound.setVolume(volume);
+      sound.play();
+     
+      
+    }
+    
+  )
+  //sound.stop()
+}
 
 var stats = new Stats();
 stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -147,14 +170,15 @@ function formatLowPolyTreeVec(){
 
 function showVertices(){
   var newvec=formatVec(collisionVec)
-  for(var i=0;i<newvec.length;i++){
+  /*for(var i=0;i<newvec.length;i++){
     var newcube=new THREE.Mesh(
       new THREE.BoxGeometry(2,1,2),
       new THREE.MeshBasicMaterial({color:i*24})
     )
           newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
           scene.add(newcube)
-  }
+  }*/
+  return newvec;
 }
 
 function showTreeVertices(){
@@ -255,7 +279,7 @@ rgbeLoader.load('./assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
     
     //scene.environment=texture;
     
-    
+   
   loader.load('./assets/porschecar/car1.gltf',function(gltf){
     const model=gltf.scene;
     car=model
@@ -324,7 +348,7 @@ loader.load('./assets/porschecar/wheel.gltf',function(gltf){
   porsche.add(RearLeftWheel);
   wheel4ID=RearLeftWheel.uuid
 });
-loader.load('./assets/maple_tree/scene.gltf',function(gltf){
+ loader.load('./assets/maple_tree/scene.gltf',function(gltf){
   gltf.scene.traverse( function( node ) {
 
     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
@@ -343,115 +367,156 @@ loader.load('./assets/maple_tree/scene.gltf',function(gltf){
     newcube.rotateY(rot)
     scene.add(newcube)
 }
-//scene.add(treeGroup)
+scene.add(treeGroup)
 
 });
-// loader.load('./assets/daisies/scene.gltf',function(gltf){
-//   const tree=gltf.scene;
-//   tree.castShadow=true;
-//   var newvec=formatTreeVec()
-//   tree.scale.set(0.01,0.01,0.01)
-//   for(var i=0;i<newvec.length;i+=3){
-//     var newcube=tree.clone();
-//     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
-//     var rand=getRandomInt(5,15)/15
-//     var rot=getRandomInt(-314,314)/100
-//     newcube.scale.set(rand*3,0.2,rand*3)
-//     newcube.rotateY(rot)
-//     scene.add(newcube)
-// }
-// //scene.add(treeGroup)
+/*
+loader.load('./assets/daisies/scene.gltf',function(gltf){
+  const tree=gltf.scene;
+  tree.castShadow=true;
+  var newvec=formatTreeVec()
+  tree.scale.set(0.01,0.01,0.01)
+  for(var i=0;i<newvec.length;i+=3){
+    var newcube=tree.clone();
+    newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
+    var rand=getRandomInt(5,15)/15
+    var rot=getRandomInt(-314,314)/100
+    newcube.scale.set(rand*3,0.2,rand*3)
+    newcube.rotateY(rot)
+    scene.add(newcube)
+}
+//scene.add(treeGroup)
 
-// });
-// loader.load('./assets/cgv_models1.glb',function(gltf){
-//   gltf.scene.traverse( function( node ) {
+}); */
+ loader.load('./assets/cgv_models1.glb',function(gltf){
+  gltf.scene.traverse( function( node ) {
 
-//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
 
-// } );
-//   const polytree=gltf.scene;
-//   polytree.castShadow=true;
-//   var newvec=formatLowPolyTreeVec()
-//   for(var i=0;i<newvec.length;i++){
-//     var newcube=polytree.clone();
-//     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
-//     var rand=getRandomInt(5,15)/20
-//     var rot=getRandomInt(-314,314)/100
-//     newcube.scale.set(rand,rand,rand)
-//     newcube.rotateY(rot)
-//     scene.add(newcube)
-// }
+} );
+  const polytree=gltf.scene;
+  polytree.castShadow=true;
+  var newvec=formatLowPolyTreeVec()
+  for(var i=0;i<newvec.length;i++){
+    var newcube=polytree.clone();
+    newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
+    var rand=getRandomInt(5,15)/20
+    var rot=getRandomInt(-314,314)/100
+    newcube.scale.set(rand,rand,rand)
+    newcube.rotateY(rot)
+    scene.add(newcube)
+}
 
-// });
-// loader.load('./assets/starting_line/scene.gltf',function(gltf){
-//   const start=gltf.scene;
-//   gltf.scene.traverse( function( node ) {
+});
+loader.load('./assets/starting_line/scene.gltf',function(gltf){
+  const start=gltf.scene;
+  gltf.scene.traverse( function( node ) {
 
-//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
 
-// } );
-//   start.rotateY((Math.PI/2)*1.05)
-//   start.translateZ(-40)
-//   start.translateX(-4.5)
-//   start.translateY(1.2)
-//   start.scale.set(0.08,0.05,0.05)
-//   scene.add(start)
-
-
-// });
-// loader.load('./assets/old_antenna/scene.gltf',function(gltf){
-//   const start=gltf.scene;
-//   gltf.scene.traverse( function( node ) {
-
-//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
-
-// } );
-//   start.scale.set(0.0004,0.0004,0.0004)
-//   var newvec=formatVec(antennaVec)
-//   for(var i=0;i<newvec.length;i++){
-//     var newcube=start.clone();
-//     newcube.scale.set(0.0004,0.0004,0.0004)
-//     newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
-//     var rot=getRandomInt(-314,314)/100
-//     newcube.rotateY(rot)
-//     scene.add(newcube)
-// }
-// });
-// loader.load('./assets/background_mountain_2/scene.gltf',function(gltf){
-//   const model=gltf.scene;
-//   model.scale.set(3,3,3)
-//   model.rotateY(Math.PI/2)
-//   var numMountains=10
-//   for(var i=0;i<numMountains;i++){
-//     var newcube=model.clone();
-//     var rand=getRandomInt(40,50)/15
-//     newcube.rotateY((2*Math.PI/numMountains)*i)
-//     newcube.translateX(-3000)
-//     newcube.rotateY((Math.PI/2))
-//     newcube.translateZ(180)
-//     newcube.scale.set(3*rand,3*rand,3*rand)
-//     scene.add(newcube)
-// }
-// });
-// loader.load('./assets/metal_advertising_billboard_single_sided/scene.gltf',function(gltf){
-//   const start=gltf.scene;
-//   gltf.scene.traverse( function( node ) {
-
-//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
-
-// } );
-//   start.rotateY((Math.PI/2)*1.05)
-//   start.translateZ(-40)
-//   start.translateX(-4.5)
-//   start.scale.set(0.8,0.8,0.8)
-//   start.position.set(166.56489426840827,
-//     0,
-//     27.612372137162442)
-//   start.rotateY(Math.PI/2)
-//   scene.add(start)
+} );
+  start.rotateY((Math.PI/2)*1.05)
+  start.translateZ(-40)
+  start.translateX(-4.5)
+  start.translateY(1.2)
+  start.scale.set(0.08,0.05,0.05)
+  scene.add(start)
 
 
-// });
+});
+
+loader.load('./assets/old_antenna/scene.gltf',function(gltf){
+  const start=gltf.scene;
+  gltf.scene.traverse( function( node ) {
+
+    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+
+} );
+  start.scale.set(0.0004,0.0004,0.0004)
+  var newvec=formatVec(antennaVec)
+  for(var i=0;i<newvec.length;i++){
+    var newcube=start.clone();
+    newcube.scale.set(0.0004,0.0004,0.0004)
+    newcube.position.set(newvec[i].x,newvec[i].y,newvec[i].z)
+    var rot=getRandomInt(-314,314)/100
+    newcube.rotateY(rot)
+    scene.add(newcube)
+}
+});
+loader.load('./assets/background_mountain_2/scene.gltf',function(gltf){
+  const model=gltf.scene;
+  model.scale.set(3,3,3)
+  model.rotateY(Math.PI/2)
+  var numMountains=10
+  for(var i=0;i<numMountains;i++){
+    var newcube=model.clone();
+    var rand=getRandomInt(40,50)/15
+    newcube.rotateY((2*Math.PI/numMountains)*i)
+    newcube.translateX(-3000)
+    newcube.rotateY((Math.PI/2))
+    newcube.translateZ(180)
+    newcube.scale.set(3*rand,3*rand,3*rand)
+    scene.add(newcube)
+}
+}); 
+loader.load('./assets/metal_advertising_billboard_single_sided/scene.gltf',function(gltf){
+  const start=gltf.scene;
+  gltf.scene.traverse( function( node ) {
+
+    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+
+} );
+  start.rotateY((Math.PI/2)*1.05)
+  start.translateZ(-40)
+  start.translateX(-4.5)
+  start.scale.set(0.8,0.8,0.8)
+  start.position.set(166.56489426840827,
+    0,
+    27.612372137162442)
+  start.rotateY(Math.PI/2)
+  scene.add(start)
+
+
+});
+
+
+
+// load grenades and tnt
+
+let grenades =[];
+
+let fbxloader = new FBXLoader();
+fbxloader.load("assets/Grenade/grenade.fbx",
+function(obj){
+  obj.castShadow=true;
+  var newvec=showVertices()
+  for(var i=0;i<50;i++){
+    var grenade_obj=obj.clone();
+    grenade_obj.scale.set(0.1,0.1,0.1)
+    var rand_pos=getRandomInt(10,newvec.length)
+    grenade_obj.position.set(newvec[rand_pos].x,newvec[rand_pos].y,newvec[rand_pos].z)
+    grenades.push(grenade_obj)
+    scene.add(grenade_obj)
+  }
+})
+
+fbxloader.load("assets/Grenade/tnt.fbx",
+function(obj){
+  obj.castShadow=true;
+  var newvec=showVertices()
+  for(var i=0;i<50;i++){
+    var tnt_obj=obj.clone();
+    tnt_obj.scale.set(0.05,0.05,0.05)
+    var rand_pos=getRandomInt(10,newvec.length)
+    tnt_obj.position.set(newvec[rand_pos].x,newvec[rand_pos].y,newvec[rand_pos].z)
+    grenades.push(tnt_obj)
+    scene.add(tnt_obj)
+  }
+})
+
+
+
+//load start sound
 
 const cube1=new THREE.Mesh(
   new THREE.BoxGeometry(2,1,4.65),
@@ -524,6 +589,14 @@ function distanceVector( v1, v2 )
     var dx = v1.x - v2.x;
     var dy = v1.y - v2.y;
     var dz = v1.z - v2.z;
+
+    return Math.sqrt( dx * dx + dy * dy + dz * dz );
+}
+function grenadeDistance( v1, v2 )
+{
+    var dx = v1.x - v2.position.x;
+    var dy = v1.y - v2.position.y;
+    var dz = v1.z - v2.position.z;
 
     return Math.sqrt( dx * dx + dy * dy + dz * dz );
 }
@@ -618,6 +691,22 @@ var collide=formatTreeVec()
       )
 
 
+
+    
+function GrenadeCollision(){
+
+  for(var i=0;i<grenades.length;i++){
+    if(grenadeDistance(porsche.position,grenades[i])<1){
+      console.log("boom")
+      scene.remove(grenades[i])
+
+      return true;
+  
+      
+    }
+  }
+  return false
+}
 function checkCollisions(){
   for(var i=0;i<collide.length;i++){
     if(distanceVector(porsche.position,collide[i])<5){
@@ -676,26 +765,7 @@ turnBack.style.color='red'
 
 let factor=0.00006;
 //console.log(scene)
-
-function loadSound(soundpath,volume){
-  let listener = new THREE.AudioListener();
-  camera.add(listener);
-
-
-  const sound = new THREE.Audio(listener);
-  let soundloader = new THREE.AudioLoader();
-  soundloader.load
-  (
-    soundpath,
-    function(buffer){
-      sound.setBuffer(buffer);
-      sound.setVolume(volume);
-      sound.play();
-    }
-  )
-}
-
-
+loadSound("assets/Sounds/lambo.mp3",0.5) 
 function animate(time) {
   counter++;
   if(counter%30==0){
@@ -703,12 +773,14 @@ function animate(time) {
     counter=0
   }
   if(time>10000){
+
+   
     //console.log(speed)
     stats.begin()
     cube1BB.copy(cube1.geometry.boundingBox).applyMatrix4(cube1.matrixWorld);
       //console.log(cube1BB)
       if(checkCollisions()){
-        loadSound("assets/Sounds/car-crash-sound-eefect.mp3",0.5)
+        loadSound("assets/Sounds/car-crash-sound-eefect.mp3",0.005)
         if(speed>0){
           porsche.translateZ(-speed/2)
         }
@@ -716,6 +788,16 @@ function animate(time) {
           porsche.translateZ(-speed/2)
         }
         speed=0
+        
+      }
+      if(GrenadeCollision()){
+       console.log("ooops dead")
+      }
+      else{
+        //console.log("alive")
+      }
+      if(keys.w || keys.s){
+       loadSound("assets/Sounds/acceleration.mp3",0.01);
       }
 
     if ( keys.w && speed<70/12){
@@ -758,7 +840,7 @@ function animate(time) {
       speed-=speed*0.7*0.016564/12 -(left*speed*factor)-(right*speed*factor);
     }
     if ( keys.s && speed>0 ){
-      loadSound("assets/Sounds/abrupt_stop.mp3",0.01)
+      loadSound("assets/Sounds/abrupt_stop.mp3",0.001)
       if(speed>=1){
         speed -=speed*3*0.016564/12;
       }
@@ -785,8 +867,6 @@ function animate(time) {
         car.rotateX(-deccelerate*0.0001)
       }
     }
-  
-  
   
     //reverse
     if(speed==0 && reverse!=0){
@@ -826,7 +906,6 @@ function animate(time) {
       FrontLeftWheel.rotateX(-speed*2)
       RearRightWheel.rotateX(speed*2)
       RearLeftWheel.rotateX(-speed*2)
-  
     }
   
   
@@ -834,7 +913,7 @@ function animate(time) {
   
     if ( keys.a ){
       if(left<30 && right==0){
-        loadSound("assets/Sounds/left_right_screeching.mp3",0.01)
+        loadSound("assets/Sounds/turning.mp3",0.001)
         FrontLeftGroup.rotateY(0.03)
         FrontRightGroup.rotateY(0.03)
         car.rotateZ(speed*0.0005)
@@ -867,7 +946,7 @@ function animate(time) {
     }
     if ( keys.d && !keys.a && left==0){
       if(right<30 && left==0){
-        loadSound("assets/Sounds/left_right_screeching.mp3",0.01)
+        loadSound("assets/Sounds/turning.mp3",0.01)
         FrontLeftGroup.rotateY(-0.03)
         FrontRightGroup.rotateY(-0.03)
         car.rotateZ(-speed*0.0005)
