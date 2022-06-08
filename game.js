@@ -677,7 +677,7 @@ turnBack.style.color='red'
 let factor=0.00006;
 //console.log(scene)
 
-function loadSound(){
+function loadSound(soundpath,volume){
   let listener = new THREE.AudioListener();
   camera.add(listener);
 
@@ -686,10 +686,10 @@ function loadSound(){
   let soundloader = new THREE.AudioLoader();
   soundloader.load
   (
-    "assets/Sounds/car-crash-sound-eefect.mp3",
+    soundpath,
     function(buffer){
       sound.setBuffer(buffer);
-      sound.setVolume(0.5);
+      sound.setVolume(volume);
       sound.play();
     }
   )
@@ -708,7 +708,7 @@ function animate(time) {
     cube1BB.copy(cube1.geometry.boundingBox).applyMatrix4(cube1.matrixWorld);
       //console.log(cube1BB)
       if(checkCollisions()){
-        loadSound()
+        loadSound("assets/Sounds/car-crash-sound-eefect.mp3",0.5)
         if(speed>0){
           porsche.translateZ(-speed/2)
         }
@@ -719,6 +719,7 @@ function animate(time) {
       }
 
     if ( keys.w && speed<70/12){
+      loadSound("assets/Sounds/driving.mp3",0.5)
       if(speed<=9.2/12){
         speed+=5*0.016564/12-(left*speed*factor)-(right*speed*factor)
       }
@@ -749,6 +750,7 @@ function animate(time) {
         
     }
     else{
+      
       if(accelerate>0){
         accelerate-=1;
         car.rotateX(accelerate*0.00015)
@@ -756,6 +758,7 @@ function animate(time) {
       speed-=speed*0.7*0.016564/12 -(left*speed*factor)-(right*speed*factor);
     }
     if ( keys.s && speed>0 ){
+      loadSound("assets/Sounds/abrupt_stop.mp3",0.1)
       if(speed>=1){
         speed -=speed*3*0.016564/12;
       }
@@ -764,6 +767,7 @@ function animate(time) {
       }
       if(speed<0){
         speed=0
+        
       }
       if(deccelerate<17 ){
         deccelerate+=1;
@@ -774,7 +778,9 @@ function animate(time) {
       }
     }
     else{
+      
       if(deccelerate>0){
+        
         deccelerate-=1;
         car.rotateX(-deccelerate*0.0001)
       }
@@ -787,6 +793,7 @@ function animate(time) {
       reverse-=1
     }
     if(keys.s && speed<=0 && reverse==0 ){
+      loadSound("assets/Sounds/driving.mp3",0.5)
       if(speed>-1 && speed<=0){
         speed-=1*0.016564/12
       }
@@ -827,6 +834,7 @@ function animate(time) {
   
     if ( keys.a ){
       if(left<30 && right==0){
+        loadSound("assets/Sounds/left_right_screeching.mp3",0.1)
         FrontLeftGroup.rotateY(0.03)
         FrontRightGroup.rotateY(0.03)
         car.rotateZ(speed*0.0005)
@@ -859,6 +867,7 @@ function animate(time) {
     }
     if ( keys.d && !keys.a && left==0){
       if(right<30 && left==0){
+        loadSound("assets/Sounds/left_right_screeching.mp3",0.1)
         FrontLeftGroup.rotateY(-0.03)
         FrontRightGroup.rotateY(-0.03)
         car.rotateZ(-speed*0.0005)
