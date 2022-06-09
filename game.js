@@ -13,14 +13,15 @@ import {antennaVec} from './collision.js';
 import {Stats} from './FPS.js'
 import {checkpointVec} from './collision.js'
 import {barrelVec} from './collision.js'
+import { Vertex } from "three";
+import { Vector3 } from "three";
+import { Audio } from "three";
 
 /**
- * @goal returns end point
- * @keys returns control keys
- * @follow 
- * @collisionVec2 returns collision vector
- * @speed 
- * @a @b 
+ * goal returns end point
+ * keys returns control keys 
+ * collisionVec2 returns collision vector
+ * speed initialises speed 
  */
 var goal, keys, follow;
 var collisionVec2=[]
@@ -69,14 +70,23 @@ let checkPoints=[]
 let completedCheckpoints=[]
 let checkpointcount=0
 
-let shadowQuality=3000; //shadow map size = 1024*3000
-let shadowDistance=250; //draw distance = 500 units
-let drawDistance=500; //draw distance = 500 units
-let foliageCount=1; //full
-let reflections=true; //reflections on
-let updatespersecond=30; //twice per second 60/30=2
+/**
+ * shadowQuality shadow map size = 1024*3000
+ * shadowDistance draw distance = 500 units
+ * drawDistance draw distance = 500 units
+ * foliageCount full
+ * reflections turn on reflections
+ * updatespersecond update twice per second 60/30=2
+ * graphicsSetting change graphics settings high medium low or lowest
+ */
+let shadowQuality=3000;
+let shadowDistance=250;
+let drawDistance=500; 
+let foliageCount=1; 
+let reflections=true; 
+let updatespersecond=30;
 
-let graphicsSetting='medium'//change graphics settings high medium low or lowest
+let graphicsSetting='medium'
 
 
 
@@ -108,28 +118,37 @@ else if(graphicsSetting=="lowest"){
   updatespersecond=60 //once per second
 }
 
-
-// creates a stats element on screen to tell performance figures
+/**
+ * @stats creates a stats element on screen to tell performance figures
+ */
 var stats = new Stats();
 stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
 document.body.appendChild( stats.dom );
 
-
-//instantiates a new renderer
+/**
+ * @renderer instantiates a new renderer
+ * @camera1 instantiates a new perspective camera
+ * @controls instantiates orbit controls
+ */
 const renderer = new THREE.WebGLRenderer({
   antialias: true
 });
 
-//creates a new orbit camera that can be switched to by pressing 'p'
+
 const camera1 = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
 const controls = new OrbitControls( camera1, renderer.domElement );
 
-//controls.update() must be called after any manual changes to the camera's transform
+/**
+ * controls.update() must be called after any manual changes to the camera's transform
+ */
+
 camera1.position.set( 0, 20, 100 );
 controls.update();
 
+/**
+ * loader for the ground materials that texture the plane
+ */
 
-//loader for the ground materials that texture the plane
 const textureLoader=new THREE.TextureLoader();
 const grassBaseColor=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_basecolor.jpg');
 const grassDisp=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_height.png');
@@ -137,48 +156,63 @@ const grassNorm=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_nor
 const grassOcc=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_ambientOcclusion.jpg');
 const grassRough=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_roughness.jpg');
 
-
-//gets a baseline start time for the first lap of the race
+/**
+ * gets a baseline start time for the first lap of the race
+ */
 let start=new Date();
 let startTime=start.getTime();
 
-
-//instantiates a shadowMap and uses PCFSoftShadowMap for higher quality shadoes
+/**
+ * instantiates a shadowMap and uses PCFSoftShadowMap for higher quality shadoes
+ */
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
 
-//appends the renderer to the window
+
+/**
+ * appends the renderer to the window
+ */
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+/**
+ * instantiates a follow camera for a third person perspective of the car
+ */
 
-//instantiates a follow camera for a third person perspective of the car
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 20000 );
     camera.position.set( 0, 1.3, 0 );
     const scene = new THREE.Scene();
 camera.lookAt( 0,0,0 );
 
-//instantiates a fixed driver camera for a drivers perspective
+/**
+ * instantiates a fixed driver camera for a drivers perspective
+ */
 const driverCamera=new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight,0.01, 20000 );
 driverCamera.position.set( 0.3, 1.3, 0 );
 driverCamera.lookAt( 0,1.3,10 );
 
-//default camera is set the third person
+/**
+ * default camera is set the third person
+ */
 let Playercamera = camera;
 
-
-//instantitates a soft light to minorly illuminate the scene
+/**
+ * instantitates a soft light to minorly illuminate the scene
+ */
 const light = new THREE.AmbientLight( 0x0f0f0f ); // soft white light
 scene.add( light );
 
-//adds a directional light in order to cast shadows in the scene
+/**
+ * adds a directional light in order to cast shadows in the scene
+ */
 const directionalLight = new THREE.DirectionalLight( 0xffffff, 1.0);
 directionalLight.position.set(180,100,300);
 directionalLight.target.position.set(180,0,200)
 directionalLight.castShadow=true;
 
-
-//Set up shadow properties for the light
+/**
+ * Set up shadow properties for the light
+ */
 directionalLight.shadow.mapSize.width = 1024*shadowQuality; // default
 directionalLight.shadow.mapSize.height = 1024*shadowQuality; // default
 var d = 450;
@@ -189,23 +223,32 @@ directionalLight.shadow.camera.bottom = - d/2;
 directionalLight.shadow.bias=-0.0001
 scene.add( directionalLight );
 
+/**
+ * adds exponential fog to the scene to add atmosphere
+ */
 
-//adds exponential fog to the scene to add atmosphere
 scene.fog=new THREE.FogExp2(0xDFE9F3,0.0002)
 
-// creates a sphere to be cloned that will assist in marking places for models to be added
+/**
+ * creates a sphere to be cloned that will assist in marking places for models to be added
+ */
+
 const collisionSphere=new THREE.Mesh(
   new THREE.SphereGeometry(1,32,16),
   new THREE.MeshBasicMaterial({color:'red'})
 )
 
-//sets wrapping parameters to repeat texture accross plane
+/**
+ * sets wrapping parameters to repeat texture accross plane
+ */
+
 grassBaseColor.wrapS = THREE.RepeatWrapping;
 grassBaseColor.wrapT = THREE.RepeatWrapping;
 grassBaseColor.repeat.set( 300, 300 );
 
-
-//creates the plane with parameters loaded earlier and repeated texture
+/**
+ * creates the plane with parameters loaded earlier and repeated texture
+ */
 const planeGeometry = new THREE.PlaneGeometry(1500, 1000,1,1); // create a plane
 const planeMaterial = new THREE.MeshStandardMaterial({
     map:grassBaseColor,
@@ -223,11 +266,15 @@ scene.add(plane);
 plane.rotation.x = -0.5 * Math.PI;
 renderer.outputEncoding=THREE.sRGBEncoding;
 
+/**
+ * instantiates an array to store faces of skybox
+ */
 
-//instantiates an array to store faces of skybox
 let materialArray=[];
 
-//load textures of skybox
+/**
+ * load textures of skybox
+ */
 let texture_ft= new THREE.TextureLoader().load('./assets/Skybox/yonder_ft.jpg');
 let texture_bk= new THREE.TextureLoader().load('./assets/Skybox/yonder_bk.jpg');
 let texture_up= new THREE.TextureLoader().load('./assets/Skybox/yonder_up.jpg');
@@ -235,7 +282,9 @@ let texture_dn= new THREE.TextureLoader().load('./assets/Skybox/yonder_dn.jpg');
 let texture_rt= new THREE.TextureLoader().load('./assets/Skybox/yonder_rt.jpg');
 let texture_lf= new THREE.TextureLoader().load('./assets/Skybox/yonder_lf.jpg');
 
-//push skybox textures into material array
+/**
+ * push skybox textures into material array
+ */
 materialArray.push(new THREE.MeshBasicMaterial({map:texture_ft}));
 materialArray.push(new THREE.MeshBasicMaterial({map:texture_bk}));
 materialArray.push(new THREE.MeshBasicMaterial({map:texture_up}));
@@ -243,38 +292,57 @@ materialArray.push(new THREE.MeshBasicMaterial({map:texture_dn}));
 materialArray.push(new THREE.MeshBasicMaterial({map:texture_rt}));
 materialArray.push(new THREE.MeshBasicMaterial({map:texture_lf}));
 
-//tells the textures to render on backside of face
+/**
+ * tells the textures to render on backside of face
+ */
 for(let i=0;i<6;i++){
   materialArray[i].side=THREE.BackSide;
 }
 
-//covers interior faces of box with skybox
+/**
+ * covers interior faces of box with skybox
+ */
 let skyboxGeo = new THREE.BoxGeometry(7000,7000,7000);
 let skybox=new THREE.Mesh(skyboxGeo,materialArray);
 scene.add(skybox)
 
-//create groups that objects are added to
-//porsche group for main car model, wheels are added to this model
+
+/**
+ * create groups that objects are added to
+ * porsche group for main car model, wheels are added to this model
+ */
 const porsche=new THREE.Group();
 
-//wheel groups created for steering of car animation
+/**
+ * wheel groups created for steering of car animation
+ */
 const FrontLeftGroup= new THREE.Group();
 const FrontRightGroup= new THREE.Group();
 
-//instantiates a new loader to load hdri pack
+
+/**
+ * instantiates a new loader to load hdri pack
+ */
 const rgbeLoader= new RGBELoader();
 
-//initializes models that are about to be loaded
+/**
+ * initializes models that are about to be loaded
+ */
 let FrontRightWheel
 let FrontLeftWheel
 let RearLeftWheel
 let RearRightWheel
 let car
 let track
-//instantiates a new gltf loader to load models
+
+/**
+ * instantiates a new gltf loader to load models
+ */
 const loader=new GLTFLoader();
 
-//load hdri pack
+/**
+ * load hdri pack
+ */
 rgbeLoader.load('./assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
     texture.mapping=THREE.EquirectangularReflectionMapping;
 
@@ -317,7 +385,9 @@ rgbeLoader.load('./assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
   });
 });
 
-//load porsche wheels and add them to respective groups and locations
+/**
+ * load porsche wheels and add them to respective groups and locations
+ */
 loader.load('./assets/porschecar/wheel.gltf',function(gltf){
   const FrontRightmodel=gltf.scene;
   FrontRightWheel=FrontRightmodel
@@ -357,8 +427,9 @@ loader.load('./assets/porschecar/wheel.gltf',function(gltf){
   porsche.add(RearLeftWheel);
   wheel4ID=RearLeftWheel.uuid
 });
-
-//load tree model, enable shadows on each node and place trees in correct positions
+/**
+ * load tree model, enable shadows on each node and place trees in correct positions
+ */
 loader.load('./assets/maple_tree/scene.gltf',function(gltf){
   gltf.scene.traverse( function( node ) {
 
@@ -383,7 +454,9 @@ loader.load('./assets/maple_tree/scene.gltf',function(gltf){
 
 });
 
-//load daisies same as before, enable shadows and place in correct location
+/**
+ * load daisies same as before, enable shadows and place in correct location
+ */
 loader.load('./assets/daisies/scene.gltf',function(gltf){
   const tree=gltf.scene;
   tree.castShadow=true;
@@ -401,8 +474,9 @@ loader.load('./assets/daisies/scene.gltf',function(gltf){
 //scene.add(treeGroup)
 
 });
-
-//load low poly trees, add shadows and place
+/**
+ * load low poly trees, add shadows and place 
+*/
 loader.load('./assets/cgv_models1.glb',function(gltf){
   gltf.scene.traverse( function( node ) {
 
@@ -423,7 +497,9 @@ loader.load('./assets/cgv_models1.glb',function(gltf){
 }
 });
 
-//load and place antenna, start line and billboard
+/**
+ * load and place antenna, start line and billboard
+*/
 loader.load('./assets/starting_line/scene.gltf',function(gltf){
   const start=gltf.scene;
   gltf.scene.traverse( function( node ) {
@@ -478,8 +554,9 @@ loader.load('./assets/metal_advertising_billboard_single_sided/scene.gltf',funct
 
 });
 
-
-//load and clone mountains in a ring around the scene, do not have shadows
+/**
+ * load and clone mountains in a ring around the scene, do not have shadows
+*/
 loader.load('./assets/background_mountain_2/scene.gltf',function(gltf){
   const model=gltf.scene;
   model.scale.set(3,3,3)
@@ -517,8 +594,9 @@ loader.load('./assets/background_mountain_2/scene.gltf',function(gltf){
 
 // });
 
-
-//instantiates a new collision object that will be placed over the car
+/**
+ * instantiates a new collision object that will be placed over the car
+*/
 const cube1=new THREE.Mesh(
   new THREE.BoxGeometry(2,1,4.65),
   //new THREE.MeshPhongMaterial({color:0xff0000})
@@ -526,22 +604,29 @@ const cube1=new THREE.Mesh(
 
 cube1.translateZ(0.23)
 
-//instantiates a bounding box that fits the car for collision detection
+/**
+ * instantiates a bounding box that fits the car for collision detection
+*/
 let cube1BB= new THREE.Box3(new THREE.Vector3(), new THREE.Vector3())
 cube1BB.setFromObject(cube1)
 
-//save cube ID so it is alwaysd rendered
+/**
+ * save cube ID so it is alwaysd rendered
+*/
 var cubeID=cube1.uuid
 cube1.visible=false
 
-
-//instantiates a collision object that will be used to detect start and finishes
+/**
+ * instantiates a collision object that will be used to detect start and finishes
+*/
 const cube2=new THREE.Mesh(
   new THREE.BoxGeometry(1,1,30),
   //new THREE.MeshPhongMaterial({color:0xff0000})
 )
 
-//place the colllision brush in the correct location
+/**
+ * place the colllision brush in the correct location
+*/
 cube2.rotateY((Math.PI/2)*1.05)
 cube2.translateZ(-40)
 cube2.translateX(-4.5)
@@ -553,7 +638,9 @@ var cube2ID=cube2.uuid
 cube2.visible=true
 //scene.add(cube2)
 
-//place spheres to show where checkpoints are
+/**
+ * place spheres to show where checkpoints are
+*/
 var geometry = new THREE.SphereGeometry(1, 32, 16 );
 var material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
 var sphere = new THREE.Mesh( geometry, material );
@@ -564,14 +651,17 @@ for(var i=0;i<cpcVec;i++){
   scene.add( tempSphere );
 }
 
-
-// assembles porsche group with correct model placements
+/**
+ * assembles porsche group with correct model placements
+*/
 FrontRightGroup.position.z+=1.65;
 FrontRightGroup.position.x-=0.89;
 FrontLeftGroup.position.z+=1.65;
 FrontLeftGroup.position.x+=0.89;
 
-//adds follow camera to porsche, goal is where the camera wants to be and follow is where the camera is positioned
+/**
+ * adds follow camera to porsche, goal is where the camera wants to be and follow is where the camera is positioned
+*/
 goal = new THREE.Object3D;
 follow = new THREE.Object3D;
 follow.position.z = -coronaSafetyDistance;
@@ -587,10 +677,10 @@ porsche.rotateY(-Math.PI/2 +0.15)
 porsche.scale.set(0.5,0.5,0.5)
 
 
-
-
-//keys used to control scene
 keys = {
+  /**
+ * keys used to control scene
+*/
   a: false,
   s: false,
   d: false,
@@ -602,7 +692,9 @@ keys = {
   x:false
 };
 
-//instantiates the controller listener
+/**
+ * instantiates the controller listener
+*/
 document.body.addEventListener( 'keydown', function(e) {
   
   const key = e.code.replace('Key', '').toLowerCase();
@@ -618,15 +710,24 @@ document.body.addEventListener( 'keyup', function(e) {
   
 });
 
-//function for getting random integer in a range
+/**
+ * function for getting random integer in a range
+ * @param {number} min
+ * @param {number} min
+ * @returns {number} The maximum is exclusive and the minimum is inclusive
+*/
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
 }
 
-
-//function to find distance between two points
+/**
+ * function to find distance between two points
+ * @param {Vector3} v1 - 3d vertex
+ * @param {Vector3} v2 - 3d vertex
+ * @returns {number} distance between the vertices
+*/
 function distanceVector( v1, v2 )
 {
     var dx = v1.x - v2.x;
@@ -636,7 +737,11 @@ function distanceVector( v1, v2 )
     return Math.sqrt( dx * dx + dy * dy + dz * dz );
 }
 
-// function to convert milliseconds into time format and returns it as a string
+/**
+ * function to convert milliseconds into time format and returns it as a string
+ * @param {bigint} x - milliseconds
+ * @returns {string} time
+*/
 function ToTime(x){
     var time=""
     var temptime=x
@@ -670,8 +775,12 @@ function ToTime(x){
 
 }
 
-
-//optimisation function to remove trees and props that are out of draw distance, removes shadows from far away objects 
+/**
+ * optimisation function to remove trees and props that are out of draw distance, removes shadows from far away objects 
+ * @param {Vector3} currpos - current position
+ * @param {float} drawdist - distance to be drawn
+ * @returns {void} 
+*/
 function CullTrees(currpos,drawdist){
   scene.traverse( function( node ) {
     if ( node instanceof THREE.Group ) {
@@ -714,8 +823,9 @@ function CullTrees(currpos,drawdist){
 } );
 }
 
-
-// makes a vector with all points in the scene that can be collided with
+/**
+ * makes a vector with all points in the scene that can be collided with
+*/
 var collide=formatTreeVec()
   .concat(formatLowPolyTreeVec())
   .concat(new THREE.Vector3(166.56489426840827,
@@ -732,8 +842,9 @@ var collide=formatTreeVec()
         formatVec(antennaVec)
       )
 
-
-//if object is within range of the car then check if there is an intersection and return true if there is one
+/**
+ * if object is within range of the car then check if there is an intersection and return true if there is one
+*/
 function checkCollisions(){
   for(var i=0;i<collide.length;i++){
     if(distanceVector(porsche.position,collide[i])<5){
@@ -746,7 +857,9 @@ function checkCollisions(){
   return false
 }
 
-//check if the car is intersecting with the start finish line
+/**
+ * check if the car is intersecting with the start finish line
+*/
 function checkStartFinish(){
 if(cube1BB.intersectsBox(cube2BB)){
   return true
@@ -754,8 +867,11 @@ if(cube1BB.intersectsBox(cube2BB)){
 return false
 }
 
-
-//load sound files to be played during interactions
+/**
+ * load sound files to be played during interactions
+ * @param {Audio} soundpath
+ * @param {Audio} volume
+*/
 function loadSound(soundpath,volume){
   let listener = new THREE.AudioListener();
   camera.add(listener);
@@ -774,8 +890,9 @@ function loadSound(soundpath,volume){
   )
 }
 
-
-// count and remove checkpoints that have been collided with
+/**
+ * count and remove checkpoints that have been collided with
+*/
 function doLap(){
   //console.log(porsche.position,cpcVec[0])
  if(cpcVec.length!=0){
@@ -789,7 +906,9 @@ function doLap(){
   
 }
 
-//creates a laptime board and puts laptimes there as times are completed
+/**
+ * creates a laptime board and puts laptimes there as times are completed
+*/
 function makeLeaderBoard(){
   var word=""
   for(var i=0;i<laptimes.length;i++){
@@ -799,8 +918,12 @@ function makeLeaderBoard(){
   return word
 }
 
-//function that formats coordinate vectors that contain coordinates for models to be placed
-//changes input vector from x,y,z to a vector filled with Vector3
+/**
+ * function that formats coordinate vectors that contain coordinates for models to be placed
+ * changes input vector from x,y,z to a vector filled with Vector3
+ * @param {verted} vector
+ * @returns {Vector3} 
+*/
 function formatVec(vector){
   const nadia=[]
   for(var i=0;i<vector.length-3;i+=3){
@@ -813,7 +936,12 @@ function formatVec(vector){
   return nadia;
 }
 
-//function that is based off of formatVec() but for barrel props exclusively, performs same function as formatVec()
+/**
+ * function that is based off of formatVec() but for barrel props exclusively, performs same function as formatVec()
+ * changes input vector from x,y,z to a vector filled with Vector3
+ * no params
+ * @returns {Array} 
+*/
 function formatbarrelVec(){
   const nadia=[]
   for(var i=0;i<barrelVec.length-3;i+=3){
@@ -826,7 +954,11 @@ function formatbarrelVec(){
   return nadia;
 }
 
-//function that is based off of formatVec() but for tree props exclusively
+/**
+ * function that is based off of formatVec() but for tree props exclusively
+ * no params
+ * @returns {Array} 
+*/
 function formatTreeVec(){
   const nadia1=[]
   for(var i=0;i<treeVec.length-3;i+=3){
@@ -839,7 +971,11 @@ function formatTreeVec(){
   return nadia1;
 }
 
-//function that is based off of formatVec() but for low poly tree props exclusively
+/**
+ * function that is based off of formatVec() but for low poly tree props exclusively
+ * no params
+ * @returns {Array} 
+*/
 function formatLowPolyTreeVec(){
   const nadia2=[]
   for(var i=0;i<lowPolyTreeVec.length-3;i+=3){
@@ -852,7 +988,11 @@ function formatLowPolyTreeVec(){
   return nadia2;
 }
 
-//function that is used for debugging, shows vertices of track and clones boxes onto each vertex
+/**
+ * function that is used for debugging, shows vertices of track and clones boxes onto each vertex
+ * no params
+ * void function 
+*/
 function showVertices(){
   var newvec=formatVec(collisionVec)
   for(var i=0;i<newvec.length;i++){
@@ -865,7 +1005,11 @@ function showVertices(){
   }
 }
 
-//function used to show location of where tree models will be places (not in use)
+/**
+ * function used to show location of where tree models will be places (not in use)
+ * no params
+ * void function 
+*/
 function showTreeVertices(){
   var newvec=formatTreeVec()
   for(var i=0;i<newvec.length;i++){
@@ -875,7 +1019,11 @@ function showTreeVertices(){
 }
 }
 
-// function used to double the number of vertices in a vertex vector, interpolates new points between existing points
+/**
+ * function used to double the number of vertices in a vertex vector, interpolates new points between existing points
+ * no params
+ * @returns {vec3}
+*/
 function doublevec(singlevec){
   var anothervec=[];
   for(var i=0;i<singlevec.length-2;i+=2){
@@ -896,8 +1044,9 @@ function doublevec(singlevec){
 }
 
 
-//create div for UI elements and position them correctly
-
+/**
+ * create div for UI elements and position them correctly
+*/
 var tempDiv = document.createElement('div');
 tempDiv.style.position = 'absolute';
 tempDiv.style.width = 100;
@@ -967,7 +1116,9 @@ document.body.appendChild(leaderBoard);
 leaderBoard.style.color='red'
 
 
-// call on window resize listener for window resizes
+/**
+ * call on window resize listener for window resizes
+*/
 window.addEventListener( 'resize', onWindowResize, false );
 
 function onWindowResize(){
@@ -979,10 +1130,15 @@ function onWindowResize(){
 
 }
 
-//set speed factor that can be adjusted to change car characteristics
+/**
+ * set speed factor that can be adjusted to change car characteristics
+*/
 let factor=0.00006;
 
-//animate function that runs every frame
+/**
+ * animation function
+ * @param {time} time
+*/
 function animate(time) {
   counter++;
 
