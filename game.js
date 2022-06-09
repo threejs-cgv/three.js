@@ -1467,12 +1467,12 @@ function animate(time) {
       ) <= 0 &&
       win == false
     ) {
-      // Initialize a new OpenGl particle system with given scene and perspective camera
-      particles = new MyParticleSystem({
-        parent: porsche,
-        camera: Playercamera,
-      });
-      RAF();
+      // // Initialize a new OpenGl particle system with given scene and perspective camera
+      // particles = new MyParticleSystem({
+      //   parent: porsche,
+      //   camera: Playercamera,
+      // });
+      // RAF();
       // console.log("Particles", particles.particles);
       WinLose.innerHTML = "YOU LOST! press R to try again!";
       WinLose.style.backgroundColor = "red";
