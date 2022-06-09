@@ -1,5 +1,6 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js";
 import{GLTFLoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/GLTFLoader.js";
+import{FBXLoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/FBXLoader.js";
 import{RGBELoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/RGBELoader.js";
 import{OrbitControls} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js";
 import {collisionVec} from './collision.js';
@@ -50,7 +51,7 @@ let checkpointcount=0
 let EasytimetoComplete=24100;
 let MediumtimetoComplete=20100;
 let HardtimetoComplete=16600;
-let timetoComplete=0;
+let timetoComplete=2000;
 let difficulty= "medium"
 let shadowQuality=3000; //shadow map size = 1024*3000
 let shadowDistance=500; //draw distance = 500 units
@@ -496,20 +497,18 @@ loader.load('./assets/background_mountain_2/scene.gltf',function(gltf){
 }
 });
 
-loader.load('./assets/Grenade/grenade.fbx',function(obj){
-  obj.traverse( function( node ) {
+var fbxloader = new FBXLoader()
+var grenades =[]
+fbxloader.load('./assets/Grenade/grenade.fbx',function(obj){
 
-    if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
-
-} );
-  const tree=obj;
-  tree.castShadow=true;
+  obj.castShadow=true;
   var newvec=globalBarrelVec
-  tree.scale.set(0.01,0.01,0.01)
+  //obj.scale.set(0.01,0.01,0.01)
   for(var i=0;i<newvec.length;i+=difficultyValue){
-    var newcube=tree.clone();
+    var newcube=obj.clone();
     newcube.position.set(newvec[i].x,newvec[i].y+0.4,newvec[i].z)
     newcube.scale.set(0.1,0.1,0.1)
+    grenades.push(newcube)
     scene.add(newcube)
     collisionBarrelVec.push(new THREE.Vector3(newvec[i].x,newvec[i].y,newvec[i].z))
 }
@@ -752,6 +751,7 @@ function checkBarrelCollisions(){
   for(var i=0;i<vec.length;i++){
     if(distanceVector(porsche.position,vec[i])<5){
       if(cube1BB.containsPoint(vec[i])){
+        scene.remove(grenades[i])
         return true;
 
       }
@@ -1033,6 +1033,9 @@ function onWindowResize(){
 let factor=0.00006;
 
 //animate function that runs every frame
+
+loadSound("assets/Sounds/lambo.mp3",0.5)
+
 function animate(time) {
   counter++;
 
@@ -1045,6 +1048,8 @@ function animate(time) {
   //sets a 10 second wait for model loading 
   if(time>15000){
 
+
+
     //start frame rate counter
     stats.begin()
 
@@ -1054,6 +1059,7 @@ function animate(time) {
 
     //if collision is detected
       if(checkCollisions()){
+        loadSound("assets/Sounds/car-crash-sound-eefect.mp3",0.001)
         
 
         //translate car and set speed to zero
@@ -1065,8 +1071,12 @@ function animate(time) {
         }
         speed=0
       }
+      
 
     if(!win && !lose){
+      if(keys.w || keys.s){
+        loadSound("assets/Sounds/acceleration.mp3",0.001)
+      }
       //if car is accelerating then mimic gearing
     if ( keys.w && speed<70/12){
       if(speed<=9.2/12){
@@ -1459,6 +1469,7 @@ function animate(time) {
       }
 
       if(checkBarrelCollisions()){
+        timetoComplete=timetoComplete-100
         console.log(true)
       }
 
