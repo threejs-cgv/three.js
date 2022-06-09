@@ -91,7 +91,7 @@ export class MyParticleSystem {
     /* #region Set Defaults */
     this._texture = "./resources/fire.png"; // set default to params.texture
     this._birthrate = 75.0; // Set default to params.birthrate
-    this._life = (Math.random() * 0.75 + 0.25) * 6.0; // set default to params.life
+    this._life = (Math.random() * 0.75 + 0.25) * 2.0; // set default to params.life
     this._speed = -15; // Set default to params.speed
     this._maxsize = 4.0; // Set default to params.maxsize
     if ("texture" in params) {
