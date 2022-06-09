@@ -289,9 +289,21 @@ const porsche = new THREE.Group();
 //wheel groups created for steering of car animation
 const FrontLeftGroup = new THREE.Group();
 const FrontRightGroup = new THREE.Group();
+const progressBar = document.getElementById("progress-bar");
+
+const loadingManager = new THREE.LoadingManager();
+
+loadingManager.onProgress = function (item, loaded, total) {
+  progressBar.value = (loaded / total) * 100;
+}; // called when an item has been loaded
+
+const progressBarContainer = document.querySelector(".progress-bar-container");
+loadingManager.onLoad = function () {
+  progressBarContainer.style.display = "none";
+}; // called when all items have been loaded
 
 //instantiates a new loader to load hdri pack
-const rgbeLoader = new RGBELoader();
+const rgbeLoader = new RGBELoader(loadingManager);
 
 //initializes models that are about to be loaded
 let FrontRightWheel;
@@ -302,7 +314,7 @@ let car;
 let track;
 globalBarrelVec = formatbarrelVec();
 //instantiates a new gltf loader to load models
-const loader = new GLTFLoader();
+const loader = new GLTFLoader(loadingManager);
 
 /* #region Functions/Methods */
 
@@ -1477,6 +1489,8 @@ function animate(time) {
     if (keys.r) {
       porsche.position.z = 0;
       porsche.position.x = 0;
+      // console.log(porsche.particles);
+      // porsche.remove(particles);
       speed = 0;
       porsche.rotation.set(0, -Math.PI / 2 + 0.15, 0);
       laps = 0;
