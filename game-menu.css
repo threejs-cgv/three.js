@@ -3,8 +3,8 @@ body {
 }
 
 .threeD-button-set {
-  --y: ;
-  --x: ;
+  --y:;
+  --x:;
   --distance: 1px;
   --theme: hsl(180 100% 50%);
   --theme-bg: hsl(180 100% 50% / 25%);
@@ -18,7 +18,7 @@ body {
   --_btn-bg-hover: var(--theme-bg-hover);
   --_btn-text: var(--theme-text);
   --_btn-text-shadow: var(--theme-shadow);
-  --_bounce-ease: cubic-bezier(0.5, 1.75, 0.75, 1.25);
+  --_bounce-ease: cubic-bezier(.5, 1.75, .75, 1.25);
 
   /* remove <ul> margins */
   margin: 0;
@@ -28,26 +28,36 @@ body {
   flex-direction: column;
   align-items: flex-start;
   gap: 2.5vh;
-
+  
   /* create 3D space context */
   transform-style: preserve-3d;
 
   /* clamped menu rotation to not be too extreme */
-  transform: rotateY(
-      clamp(calc(var(--_max-rotateY) * -1), var(--y), var(--_max-rotateY))
-    )
+  transform: 
+    rotateY(
+      clamp(
+        calc(var(--_max-rotateY) * -1), 
+        var(--y), 
+        var(--_max-rotateY)
+      )
+    ) 
     rotateX(
-      clamp(calc(var(--_max-rotateX) * -1), var(--x), var(--_max-rotateX))
-    );
+      clamp(
+        calc(var(--_max-rotateX) * -1), 
+        var(--x), 
+        var(--_max-rotateX)
+      )
+    )
+  ;
 
   /* removes Safari focus ring on <ul> after button interaction */
   &:focus {
     outline: none;
   }
-
+  
   @media (--motionOK) {
     will-change: transform;
-    transition: transform 0.1s ease;
+    transition: transform .1s ease;
     animation: rotate-y 5s ease-in-out infinite;
   }
 
@@ -60,7 +70,7 @@ body {
 
   @media (--HDcolor) {
     @supports (color: color(display-p3 0 0 0)) {
-      --theme: color(display-p3 0.4 0 0.9);
+      --theme: color(display-p3 .4 0 .9);
     }
   }
 }
@@ -73,16 +83,16 @@ body {
   position: relative;
 
   /* create 3D space context */
-  transform-style: preserve-3d;
+  transform-style: preserve-3d; 
 }
-
+  
 .threeD-button-set button {
   /* strip out default button styles */
   appearance: none;
   outline: none;
   border: none;
   -webkit-tap-highlight-color: transparent;
-
+  
   /* bring in brand styles via props */
   background-color: var(--_btn-bg);
   color: var(--_btn-text);
@@ -90,14 +100,14 @@ body {
 
   font-size: min(5vmin, 3rem);
   font-family: Audiowide;
-  padding-block: 0.75ch;
+  padding-block: .75ch;
   padding-inline: 2ch;
   border-radius: 5px 20px;
 
   /* prepare for 3D perspective transforms */
   transform: translateZ(var(--distance));
   transform-style: preserve-3d;
-
+  
   &:is(:hover, :focus-visible):not(:active) {
     /* subtle distance plus bg color change on hover/focus */
     --distance: 15px;
@@ -108,22 +118,18 @@ body {
       --distance: 3vmax;
 
       transition-timing-function: var(--_bounce-ease);
-      transition-duration: 0.4s;
+      transition-duration: .4s;
 
-      &::after {
-        transition-duration: 0.5s;
-      }
-      &::before {
-        transition-duration: 0.3s;
-      }
+      &::after  { transition-duration: .5s }
+      &::before { transition-duration: .3s }
     }
   }
-
+  
   &::after,
   &::before {
     /* create empty element */
-    content: "";
-    opacity: 0.8;
+    content: '';
+    opacity: .8;
 
     /* cover the parent (button) */
     position: absolute;
@@ -138,10 +144,10 @@ body {
 
     /* if motion is OK, transition the Z space move */
     @media (--motionOK) {
-      transition: transform 0.1s ease-out;
+      transition: transform .1s ease-out;   
     }
   }
-
+  
   /* exceptions for one of the pseudo elements */
   /* this will be pushed back and have a thicker border */
   &::before {
@@ -150,13 +156,17 @@ body {
 
     /* in dark mode, it glows! */
     @media (--dark) {
-      box-shadow: 0 0 25px var(--theme), inset 0 0 25px var(--theme);
+      box-shadow: 
+        0 0 25px var(--theme), 
+        inset 0 0 25px var(--theme);
     }
   }
-
+  
   @media (--motionOK) {
     will-change: transform;
-    transition: transform 0.2s ease, background-color 0.5s ease;
+    transition: 
+      transform .2s ease,
+      background-color .5s ease;
   }
 }
 
