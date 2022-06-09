@@ -496,20 +496,20 @@ loader.load('./assets/background_mountain_2/scene.gltf',function(gltf){
 }
 });
 
-loader.load('./assets/barrel/scene.gltf',function(gltf){
-  gltf.scene.traverse( function( node ) {
+loader.load('./assets/Grenade/grenade.fbx',function(obj){
+  obj.traverse( function( node ) {
 
     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
 
 } );
-  const tree=gltf.scene;
+  const tree=obj;
   tree.castShadow=true;
   var newvec=globalBarrelVec
   tree.scale.set(0.01,0.01,0.01)
   for(var i=0;i<newvec.length;i+=difficultyValue){
     var newcube=tree.clone();
     newcube.position.set(newvec[i].x,newvec[i].y+0.4,newvec[i].z)
-    newcube.scale.set(1,1,1)
+    newcube.scale.set(0.1,0.1,0.1)
     scene.add(newcube)
     collisionBarrelVec.push(new THREE.Vector3(newvec[i].x,newvec[i].y,newvec[i].z))
 }
