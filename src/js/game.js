@@ -14,6 +14,7 @@ import {antennaVec} from './collision.js';
 import {Stats} from './FPS.js'
 import {checkpointVec} from './collision.js'
 import {barrelVec} from './collision.js'
+import { graphics } from "./graphics.js"; 
 import { GUI } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/libs/dat.gui.module.js"
 
 /* #region Variables*/
@@ -75,8 +76,9 @@ let foliageCount=1; //full
 let reflections=true; //reflections on
 let updatespersecond=30; //twice per second 60/30=2
 
-let graphicsSetting="medium"//change graphics settings high medium low or lowest
+let graphicsSetting= graphics;//change graphics settings high medium low or lowest
 
+console.log(graphicsSetting);
 /* #endregion */
 
 /* #region Difficulty*/
@@ -147,11 +149,11 @@ controls.update();
 
 //loader for the ground materials that texture the plane
 const textureLoader=new THREE.TextureLoader();
-const grassBaseColor=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_basecolor.jpg');
-const grassDisp=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_height.png');
-const grassNorm=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_normal.jpg');
-const grassOcc=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_ambientOcclusion.jpg');
-const grassRough=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_roughness.jpg');
+const grassBaseColor=textureLoader.load('/assets/GrassTexture/Stylized_Grass_001_basecolor.jpg');
+const grassDisp=textureLoader.load('/assets/GrassTexture/Stylized_Grass_001_height.png');
+const grassNorm=textureLoader.load('/assets/GrassTexture/Stylized_Grass_001_normal.jpg');
+const grassOcc=textureLoader.load('/assets/GrassTexture/Stylized_Grass_001_ambientOcclusion.jpg');
+const grassRough=textureLoader.load('/assets/GrassTexture/Stylized_Grass_001_roughness.jpg');
 
 
 //gets a baseline start time for the first lap of the race
@@ -247,12 +249,12 @@ renderer.outputEncoding=THREE.sRGBEncoding;
 let materialArray=[];
 
 //load textures of skybox
-let texture_ft= new THREE.TextureLoader().load('./assets/Skybox/yonder_ft.jpg');
-let texture_bk= new THREE.TextureLoader().load('./assets/Skybox/yonder_bk.jpg');
-let texture_up= new THREE.TextureLoader().load('./assets/Skybox/yonder_up.jpg');
-let texture_dn= new THREE.TextureLoader().load('./assets/Skybox/yonder_dn.jpg');
-let texture_rt= new THREE.TextureLoader().load('./assets/Skybox/yonder_rt.jpg');
-let texture_lf= new THREE.TextureLoader().load('./assets/Skybox/yonder_lf.jpg');
+let texture_ft= new THREE.TextureLoader().load('/assets/Skybox/yonder_ft.jpg');
+let texture_bk= new THREE.TextureLoader().load('/assets/Skybox/yonder_bk.jpg');
+let texture_up= new THREE.TextureLoader().load('/assets/Skybox/yonder_up.jpg');
+let texture_dn= new THREE.TextureLoader().load('/assets/Skybox/yonder_dn.jpg');
+let texture_rt= new THREE.TextureLoader().load('/assets/Skybox/yonder_rt.jpg');
+let texture_lf= new THREE.TextureLoader().load('/assets/Skybox/yonder_lf.jpg');
 
 //push skybox textures into material array
 materialArray.push(new THREE.MeshBasicMaterial({map:texture_ft}));
@@ -310,7 +312,7 @@ globalBarrelVec=formatbarrelVec();
 const loader=new GLTFLoader(loadingManager);
 
 //load hdri pack
-rgbeLoader.load('./assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
+rgbeLoader.load('/assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
     texture.mapping=THREE.EquirectangularReflectionMapping;
 
     //if graphics settings allow set universal environment to hdri pack, helps with illumination and reflections
@@ -320,7 +322,7 @@ rgbeLoader.load('./assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
     
     
   //load porsche model and traverse each node to enable shadows
-  loader.load('./assets/porschecar/car1.gltf',function(gltf){
+  loader.load('/assets/porschecar/car1.gltf',function(gltf){
     const model=gltf.scene;
     car=model
     gltf.scene.traverse( function( node ) {
@@ -334,7 +336,7 @@ rgbeLoader.load('./assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
   });
 
   //load racetrack and traverse every node to enable shadows
-  loader.load('./assets/qwqe/scene1.gltf',function(gltf){
+  loader.load('/assets/qwqe/scene1.gltf',function(gltf){
     const grassmodel=gltf.scene;
     track=grassmodel
     gltf.scene.traverse( function( node ) {
@@ -353,7 +355,7 @@ rgbeLoader.load('./assets/MR_INT-003_Kitchen_Pierre.hdr',function(texture){
 });
 
 //load porsche wheels and add them to respective groups and locations
-loader.load('./assets/porschecar/wheel.gltf',function(gltf){
+loader.load('/assets/porschecar/wheel.gltf',function(gltf){
   const FrontRightmodel=gltf.scene;
   FrontRightWheel=FrontRightmodel
   FrontRightWheel.position.y+=0.35;
@@ -363,7 +365,7 @@ loader.load('./assets/porschecar/wheel.gltf',function(gltf){
 
 });
 
-loader.load('./assets/porschecar/wheel.gltf',function(gltf){
+loader.load('/assets/porschecar/wheel.gltf',function(gltf){
   const FrontLeftmodel=gltf.scene;
   FrontLeftWheel=FrontLeftmodel
   FrontLeftWheel.rotation.y=Math.PI
@@ -373,7 +375,7 @@ loader.load('./assets/porschecar/wheel.gltf',function(gltf){
   porsche.add(FrontLeftGroup);
 
 });
-loader.load('./assets/porschecar/wheel.gltf',function(gltf){
+loader.load('/assets/porschecar/wheel.gltf',function(gltf){
   const RearRightmodel=gltf.scene;
   RearRightWheel=RearRightmodel
   RearRightWheel.position.z-=1;
@@ -382,7 +384,7 @@ loader.load('./assets/porschecar/wheel.gltf',function(gltf){
   porsche.add(RearRightWheel);
   wheel3ID=RearRightWheel.uuid
 });
-loader.load('./assets/porschecar/wheel.gltf',function(gltf){
+loader.load('/assets/porschecar/wheel.gltf',function(gltf){
   const RearLeftmodel=gltf.scene;
   RearLeftWheel=RearLeftmodel
   RearLeftWheel.rotation.y=Math.PI
@@ -394,7 +396,7 @@ loader.load('./assets/porschecar/wheel.gltf',function(gltf){
 });
 
 //load tree model, enable shadows on each node and place trees in correct positions
-loader.load('./assets/maple_tree/scene.gltf',function(gltf){
+loader.load('/assets/maple_tree/scene.gltf',function(gltf){
   gltf.scene.traverse( function( node ) {
 
     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
@@ -419,7 +421,7 @@ loader.load('./assets/maple_tree/scene.gltf',function(gltf){
 });
 
 //load daisies same as before, enable shadows and place in correct location
-loader.load('./assets/daisies/scene.gltf',function(gltf){
+loader.load('/assets/daisies/scene.gltf',function(gltf){
   const tree=gltf.scene;
   tree.castShadow=true;
   var newvec=formatTreeVec()
@@ -438,7 +440,7 @@ loader.load('./assets/daisies/scene.gltf',function(gltf){
 });
 
 //load low poly trees, add shadows and place
-loader.load('./assets/cgv_models1.glb',function(gltf){
+loader.load('/assets/cgv_models1.glb',function(gltf){
   gltf.scene.traverse( function( node ) {
 
     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
@@ -459,7 +461,7 @@ loader.load('./assets/cgv_models1.glb',function(gltf){
 });
 
 //load and place antenna, start line and billboard
-loader.load('./assets/starting_line/scene.gltf',function(gltf){
+loader.load('/assets/starting_line/scene.gltf',function(gltf){
   const start=gltf.scene;
   gltf.scene.traverse( function( node ) {
 
@@ -475,7 +477,7 @@ loader.load('./assets/starting_line/scene.gltf',function(gltf){
 
 
 });
-loader.load('./assets/old_antenna/scene.gltf',function(gltf){
+loader.load('/assets/old_antenna/scene.gltf',function(gltf){
   const start=gltf.scene;
   gltf.scene.traverse( function( node ) {
 
@@ -493,7 +495,8 @@ loader.load('./assets/old_antenna/scene.gltf',function(gltf){
     scene.add(newcube)
 }
 });
-loader.load('./assets/metal_advertising_billboard_single_sided/scene.gltf',function(gltf){
+//load and place billboard
+loader.load('/assets/metal_advertising_billboard_single_sided/scene.gltf',function(gltf){
   const start=gltf.scene;
   gltf.scene.traverse( function( node ) {
 
@@ -515,7 +518,7 @@ loader.load('./assets/metal_advertising_billboard_single_sided/scene.gltf',funct
 
 
 //load and clone mountains in a ring around the scene, do not have shadows
-loader.load('./assets/background_mountain_2/scene.gltf',function(gltf){
+loader.load('/assets/background_mountain_2/scene.gltf',function(gltf){
   const model=gltf.scene;
   model.scale.set(3,3,3)
   model.rotateY(Math.PI/2)
@@ -532,9 +535,9 @@ loader.load('./assets/background_mountain_2/scene.gltf',function(gltf){
 }
 });
 
-var fbxloader = new FBXLoader()
+var fbxloader = new FBXLoader() //load fbx
 var grenades =[]
-fbxloader.load('./assets/Grenade/grenade.fbx',function(obj){
+fbxloader.load('/assets/Grenade/grenade.fbx',function(obj){
 
   obj.castShadow=true;
   var newvec=globalBarrelVec
@@ -635,15 +638,15 @@ keys = { // keys
   r:false
 };
 
-// var button = document.createElement('button');
-// button.innerHTML = "<button onclick=\"href='index.html'\">Start</button>";
+var button = document.createElement('button');
+button.innerHTML = "<button onclick=\"href='index.html'\">Start</button>";
 
-// document.addEventListener( 'keydown', function ( event ) {
-//   if ( event.code == 27 ) { // esc
-//     event.preventDefault();
-//     document.getElementById("button").click();
-//     }
-// });
+document.addEventListener( 'keydown', function ( event ) {
+  if ( event.code == 27 ) { // esc
+    event.preventDefault();
+    document.getElementById("button").click();
+    }
+});
 
 
 
@@ -1078,7 +1081,7 @@ let factor=0.00006;
 
 //animate function that runs every frame
 
-loadSound("assets/Sounds/lambo.mp3",0.5)
+loadSound("/assets/Sounds/lambo.mp3",0.5)
 
 function animate(time) {
   counter++;
@@ -1103,7 +1106,7 @@ function animate(time) {
 
     //if collision is detected
       if(checkCollisions()){
-        loadSound("assets/Sounds/car-crash-sound-eefect.mp3",0.001)
+        loadSound("/assets/Sounds/car-crash-sound-eefect.mp3",0.001)
         
 
         //translate car and set speed to zero
@@ -1511,7 +1514,7 @@ function animate(time) {
         currentTime.innerHTML=""
         timer.innerHTML=""
         WinLose.innerHTML=""
-        loadSound("assets/Sounds/lambo.mp3",0.5)
+        loadSound("/assets/Sounds/lambo.mp3",0.5)
       }
 
       if(checkBarrelCollisions()){
