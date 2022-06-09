@@ -10,7 +10,9 @@ import {antennaVec} from './collision.js';
 import {Stats} from './FPS.js'
 import {checkpointVec} from './collision.js'
 import {barrelVec} from './collision.js'
+import { GUI } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/libs/dat.gui.module.js"
 
+/* #region Variables*/
 var goal, keys, follow;
 var collisionVec2=[]
 var temp = new THREE.Vector3;
@@ -50,9 +52,9 @@ var laptimes=[]
 let checkpointcount=0
 let EasytimetoComplete=24100;
 let MediumtimetoComplete=20100;
-let HardtimetoComplete=16600;
+let HardtimetoComplete=17200;
 let timetoComplete=2000;
-let difficulty= "medium"
+let difficulty= "hard"
 let shadowQuality=3000; //shadow map size = 1024*3000
 let shadowDistance=500; //draw distance = 500 units
 let drawDistance=500; //draw distance = 500 units
@@ -60,19 +62,23 @@ let foliageCount=1; //full
 let reflections=true; //reflections on
 let updatespersecond=30; //twice per second 60/30=2
 
-let graphicsSetting='high'//change graphics settings high medium low or lowest
+let graphicsSetting="medium"//change graphics settings high medium low or lowest
+
+/* #endregion */
+
+/* #region Difficulty*/
 
 if(difficulty=="hard"){
   timetoComplete=HardtimetoComplete
-  difficultyValue=1
+  difficultyValue=2
 }
 else if(difficulty=="medium"){
   timetoComplete=MediumtimetoComplete
-  difficultyValue=2
+  difficultyValue=3
 }
 else if(difficulty=="easy"){
   timetoComplete=EasytimetoComplete
-  difficultyValue=4
+  difficultyValue=5
 }
 else{
   timetoComplete=10000000000
@@ -105,7 +111,7 @@ else if(graphicsSetting=="lowest"){
   updatespersecond=60 //once per second
 }
 
-
+/* #endregion Difficulty*/
 // creates a stats element on screen to tell performance figures
 var stats = new Stats();
 stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -221,6 +227,7 @@ plane.receiveShadow=true;
 scene.add(plane);
 plane.rotation.x = -0.5 * Math.PI;
 renderer.outputEncoding=THREE.sRGBEncoding;
+
 
 
 //instantiates an array to store faces of skybox
@@ -1075,7 +1082,7 @@ function animate(time) {
 
     if(!win && !lose){
       if(keys.w || keys.s){
-        loadSound("assets/Sounds/acceleration.mp3",0.001)
+        //loadSound("assets/Sounds/acceleration.mp3",0.001)
       }
       //if car is accelerating then mimic gearing
     if ( keys.w && speed<70/12){
@@ -1466,6 +1473,8 @@ function animate(time) {
         end=new Date()
         currentTime.innerHTML=""
         timer.innerHTML=""
+        WinLose.innerHTML=""
+        loadSound("assets/Sounds/lambo.mp3",0.5)
       }
 
       if(checkBarrelCollisions()){
