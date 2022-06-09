@@ -11,6 +11,7 @@ import { Stats } from "./FPS.js";
 import { checkpointVec } from "./collision.js";
 import { barrelVec } from "./collision.js";
 import { GUI } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/libs/dat.gui.module.js";
+import { MyParticleSystem } from "./particles.js";
 
 /* #region Variables*/
 var goal, keys, follow;
@@ -63,6 +64,9 @@ let reflections = true; //reflections on
 let updatespersecond = 30; //twice per second 60/30=2
 
 let graphicsSetting = "lowest"; //change graphics settings high medium low or lowest
+
+let particles = null;
+let previousRAF = null;
 
 /* #endregion */
 
@@ -301,6 +305,39 @@ globalBarrelVec = formatbarrelVec();
 const loader = new GLTFLoader();
 
 /* #region Functions/Methods */
+
+// Function to Request an Animation Frame (RAF)
+
+function RAF() {
+  requestAnimationFrame((t) => {
+    // If this is the first animation frame, then set the previous animation frame to the current frame t
+    if (previousRAF === null) {
+      previousRAF = t;
+    }
+    RAF();
+    // Render next frame
+    renderer.render(scene, Playercamera);
+    Step(t - previousRAF);
+    previousRAF = t;
+  });
+}
+// // Function to Request an Animation Frame (RAF)
+
+// function RAF() {
+//   console.log("Entered RAF()");
+//   setInterval(function () {
+//     renderer.render(scene, Playercamera);
+//     Step(3);
+//   }, 100);
+// }
+
+//Process a moving to the next animation frame
+function Step(timeElapsed) {
+  // console.log("ENtered Step() ParticleSystemDEMO.Step()");
+  const timeElapsedNew = timeElapsed * 0.001;
+
+  particles.Step(timeElapsedNew);
+}
 //load hdri pack
 rgbeLoader.load("./assets/MR_INT-003_Kitchen_Pierre.hdr", function (texture) {
   texture.mapping = THREE.EquirectangularReflectionMapping;
@@ -761,6 +798,7 @@ function checkBarrelCollisions() {
       }
     }
   }
+
   return false;
 }
 
@@ -1413,6 +1451,13 @@ function animate(time) {
       ) <= 0 &&
       win == false
     ) {
+      // Initialize a new OpenGl particle system with given scene and perspective camera
+      particles = new MyParticleSystem({
+        parent: porsche,
+        camera: Playercamera,
+      });
+      RAF();
+      // console.log("Particles", particles.particles);
       WinLose.innerHTML = "YOU LOST! press R to try again!";
       WinLose.style.backgroundColor = "red";
       lose = true;
@@ -1463,7 +1508,7 @@ function animate(time) {
     }
 
     if (checkBarrelCollisions()) {
-      timetoComplete = timetoComplete - 100;
+      timetoComplete = timetoComplete - 150;
       console.log(true);
     }
 
