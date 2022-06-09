@@ -4,6 +4,7 @@
 
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.118/build/three.module.js";
 import{GLTFLoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/GLTFLoader.js";
+import{FBXLoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/FBXLoader.js";
 import{RGBELoader} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/loaders/RGBELoader.js";
 import{OrbitControls} from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js";
 import {collisionVec} from './collision.js';
@@ -23,6 +24,9 @@ import { Audio } from "three";
  * collisionVec2 returns collision vector
  * speed initialises speed 
  */
+import { GUI } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/libs/dat.gui.module.js"
+
+/* #region Variables*/
 var goal, keys, follow;
 var collisionVec2=[]
 var temp = new THREE.Vector3;
@@ -30,7 +34,6 @@ var dir = new THREE.Vector3;
 var a = new THREE.Vector3;
 var b = new THREE.Vector3;
 var coronaSafetyDistance = 2.6;
-var velocity = 0.0;
 var speed = 0.0;
 
 /**
@@ -48,16 +51,19 @@ var wheel2ID=''
 var wheel3ID=''
 var wheel4ID=''
 var Onlap=false;
+let laps=0;
+let win=false;
+let lose=false;
+let difficultyValue=1;
+let globalBarrelVec=[]
+let collisionBarrelVec=[]
 
 let accelerate=0;
 let left=0;
 let right=0;
 let deccelerate=0;
-let gearchange=0;
 let gear='0';
-let carXrotation=0;
 let reverse=0;
-let laptime=0;
 let fpv=false;
 let Vee=8;
 var space=0;
@@ -66,10 +72,7 @@ var counter=0
 let end=new Date()
 let endTime=0
 var laptimes=[]
-let checkPoints=[]
-let completedCheckpoints=[]
 let checkpointcount=0
-
 /**
  * shadowQuality shadow map size = 1024*3000
  * shadowDistance draw distance = 500 units
@@ -79,17 +82,40 @@ let checkpointcount=0
  * updatespersecond update twice per second 60/30=2
  * graphicsSetting change graphics settings high medium low or lowest
  */
-let shadowQuality=3000;
-let shadowDistance=250;
-let drawDistance=500; 
-let foliageCount=1; 
-let reflections=true; 
-let updatespersecond=30;
 
-let graphicsSetting='medium'
+let EasytimetoComplete=24100;
+let MediumtimetoComplete=20100;
+let HardtimetoComplete=17200;
+let timetoComplete=2000;
+let difficulty= "hard"
+let shadowQuality=3000; //shadow map size = 1024*3000
+let shadowDistance=500; //draw distance = 500 units
+let drawDistance=500; //draw distance = 500 units
+let foliageCount=1; //full
+let reflections=true; //reflections on
+let updatespersecond=30; //twice per second 60/30=2
 
+let graphicsSetting="medium"//change graphics settings high medium low or lowest
 
+/* #endregion */
 
+/* #region Difficulty*/
+
+if(difficulty=="hard"){
+  timetoComplete=HardtimetoComplete
+  difficultyValue=2
+}
+else if(difficulty=="medium"){
+  timetoComplete=MediumtimetoComplete
+  difficultyValue=3
+}
+else if(difficulty=="easy"){
+  timetoComplete=EasytimetoComplete
+  difficultyValue=5
+}
+else{
+  timetoComplete=10000000000
+}
 if (graphicsSetting=="high"){
 
 }
@@ -118,8 +144,9 @@ else if(graphicsSetting=="lowest"){
   updatespersecond=60 //once per second
 }
 
+/* #endregion Difficulty*/
 /**
- * @stats creates a stats element on screen to tell performance figures
+ * creates a stats element on screen to tell performance figures
  */
 var stats = new Stats();
 stats.showPanel( 0 ); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -161,6 +188,9 @@ const grassRough=textureLoader.load('./assets/GrassTexture/Stylized_Grass_001_ro
  */
 let start=new Date();
 let startTime=start.getTime();
+
+let startTimeleft=new Date();
+
 
 /**
  * instantiates a shadowMap and uses PCFSoftShadowMap for higher quality shadoes
@@ -269,7 +299,6 @@ renderer.outputEncoding=THREE.sRGBEncoding;
 /**
  * instantiates an array to store faces of skybox
  */
-
 let materialArray=[];
 
 /**
@@ -334,7 +363,7 @@ let RearLeftWheel
 let RearRightWheel
 let car
 let track
-
+globalBarrelVec=formatbarrelVec();
 /**
  * instantiates a new gltf loader to load models
  */
@@ -574,25 +603,24 @@ loader.load('./assets/background_mountain_2/scene.gltf',function(gltf){
 }
 });
 
-// loader.load('./assets/barrel/scene.gltf',function(gltf){
-//   gltf.scene.traverse( function( node ) {
+var fbxloader = new FBXLoader()
+var grenades =[]
+fbxloader.load('./assets/Grenade/grenade.fbx',function(obj){
 
-//     if ( node.isMesh ) { node.castShadow = true; node.receiveShadow=true }
+  obj.castShadow=true;
+  var newvec=globalBarrelVec
+  //obj.scale.set(0.01,0.01,0.01)
+  for(var i=0;i<newvec.length;i+=difficultyValue){
+    var newcube=obj.clone();
+    newcube.position.set(newvec[i].x,newvec[i].y+0.4,newvec[i].z)
+    newcube.scale.set(0.1,0.1,0.1)
+    grenades.push(newcube)
+    scene.add(newcube)
+    collisionBarrelVec.push(new THREE.Vector3(newvec[i].x,newvec[i].y,newvec[i].z))
+}
+//scene.add(treeGroup)
 
-// } );
-//   const tree=gltf.scene;
-//   tree.castShadow=true;
-//   var newvec=formatbarrelVec()
-//   tree.scale.set(0.01,0.01,0.01)
-//   for(var i=0;i<newvec.length;i+=5){
-//     var newcube=tree.clone();
-//     newcube.position.set(newvec[i].x,newvec[i].y+0.4,newvec[i].z)
-//     newcube.scale.set(1,1,1)
-//     scene.add(newcube)
-// }
-// //scene.add(treeGroup)
-
-// });
+});
 
 /**
  * instantiates a new collision object that will be placed over the car
@@ -689,7 +717,8 @@ keys = {
   space:false,
   t: false,
   p:false,
-  x:false
+  x:false,
+  r:false
 };
 
 /**
@@ -857,6 +886,20 @@ function checkCollisions(){
   return false
 }
 
+function checkBarrelCollisions(){
+  const vec=collisionBarrelVec
+  for(var i=0;i<vec.length;i++){
+    if(distanceVector(porsche.position,vec[i])<5){
+      if(cube1BB.containsPoint(vec[i])){
+        scene.remove(grenades[i])
+        return true;
+
+      }
+    }
+  }
+  return false
+}
+
 /**
  * check if the car is intersecting with the start finish line
 */
@@ -944,6 +987,7 @@ function formatVec(vector){
 */
 function formatbarrelVec(){
   const nadia=[]
+  const onemoreVec=[]
   for(var i=0;i<barrelVec.length-3;i+=3){
     var tempvec=new THREE.Vector3();
       tempvec.x=barrelVec[i];
@@ -951,7 +995,10 @@ function formatbarrelVec(){
       tempvec.z=barrelVec[i+2];
       nadia.push(tempvec)
   }
-  return nadia;
+  for(var i=0;i<nadia.length;i+=difficultyValue){
+      onemoreVec.push(nadia[i])
+  }
+  return onemoreVec;
 }
 
 /**
@@ -1052,7 +1099,7 @@ tempDiv.style.position = 'absolute';
 tempDiv.style.width = 100;
 tempDiv.style.height = 100;
 tempDiv.style.top= 70 + 'px';
-tempDiv.style.left = 70 + 'px';
+tempDiv.style.left = 100 + 'px';
 tempDiv.style.fontSize=20
 document.body.appendChild(tempDiv);
 
@@ -1071,7 +1118,7 @@ check.style.position = 'absolute';
 check.style.width = 100;
 check.style.height = 100;
 check.style.top= 50 + 'px';
-check.style.left = window.innerWidth/2 -30 + 'px';
+check.style.left = window.innerWidth/2  + 'px';
 check.style.fontSize=20
 document.body.appendChild(check);
 
@@ -1089,10 +1136,30 @@ var timer = document.createElement('div');
 timer.style.position = 'absolute';
 timer.style.width = 100;
 timer.style.height = 100;
-timer.style.top= 70 + 'px';
+timer.style.top= 74 + 'px';
 timer.style.left = window.innerWidth/2 + 'px';
 timer.style.fontSize=20
 document.body.appendChild(timer);
+
+var timeLeft = document.createElement('div');
+timeLeft.style.position = 'absolute';
+timeLeft.style.width = 100;
+timeLeft.style.height = 100;
+timeLeft.style.top= 29 + 'px';
+timeLeft.style.left = window.innerWidth/2 + 'px';
+timeLeft.style.fontSize=20
+timeLeft.style.backgroundColor="red"
+document.body.appendChild(timeLeft);
+
+var WinLose = document.createElement('div');
+WinLose.style.position = 'absolute';
+WinLose.style.width = 100;
+WinLose.style.height = 100;
+WinLose.style.top= window.innerHeight/2 + 'px';
+WinLose.style.left = window.innerWidth/2 + 'px';
+WinLose.style.fontSize=20
+WinLose.style.backgroundColor="red"
+document.body.appendChild(WinLose);
 
 
 var turnBack = document.createElement('div');
@@ -1110,10 +1177,22 @@ leaderBoard.style.position = 'absolute';
 leaderBoard.style.width = 100;
 leaderBoard.style.height = 100;
 leaderBoard.style.top= 100 + 'px';
-leaderBoard.style.left = 50  + 'px';;
+leaderBoard.style.left = 150  + 'px';;
 leaderBoard.style.fontSize=20
 document.body.appendChild(leaderBoard);
 leaderBoard.style.color='red'
+
+var lapscompleted = document.createElement('div');
+lapscompleted.style.position = 'absolute';
+lapscompleted.style.width = 100;
+lapscompleted.style.height = 100;
+lapscompleted.style.top= 70 + 'px';
+lapscompleted.style.left = 10  + 'px';;
+lapscompleted.style.fontSize=20
+document.body.appendChild(lapscompleted);
+lapscompleted.style.backgroundColor="white"
+lapscompleted.innerHTML="Laps: " + laps + " / 3"
+
 
 
 /**
@@ -1139,6 +1218,9 @@ let factor=0.00006;
  * animation function
  * @param {time} time
 */
+
+loadSound("assets/Sounds/lambo.mp3",0.5)
+
 function animate(time) {
   counter++;
 
@@ -1149,7 +1231,9 @@ function animate(time) {
   }
 
   //sets a 10 second wait for model loading 
-  if(time>10000){
+  if(time>15000){
+
+
 
     //start frame rate counter
     stats.begin()
@@ -1160,6 +1244,7 @@ function animate(time) {
 
     //if collision is detected
       if(checkCollisions()){
+        loadSound("assets/Sounds/car-crash-sound-eefect.mp3",0.001)
         
 
         //translate car and set speed to zero
@@ -1171,9 +1256,13 @@ function animate(time) {
         }
         speed=0
       }
+      
 
-
-    //if car is accelerating then mimic gearing
+    if(!win && !lose){
+      if(keys.w || keys.s){
+        //loadSound("assets/Sounds/acceleration.mp3",0.001)
+      }
+      //if car is accelerating then mimic gearing
     if ( keys.w && speed<70/12){
       if(speed<=9.2/12){
         speed+=5*0.016564/12-(left*speed*factor)-(right*speed*factor)
@@ -1363,6 +1452,9 @@ function animate(time) {
       right=0
     }
    
+
+    }
+    
   
     //undo any body tilt that hasnt been untilted (simulate suspension rightening), center all rotation groups
     if(car){
@@ -1468,6 +1560,8 @@ function animate(time) {
        showVertices();
        console.log(collisionVec2)
       }
+
+      let currentTime=new Date();
       
       //update ui
       tempDiv.style.backgroundColor='white'
@@ -1475,12 +1569,13 @@ function animate(time) {
       SpeedoMeter.innerHTML = parseInt(speed*54) + " KPH";
       Gears.innerHTML = "Gear: " + gear
       check.innerHTML = "Checkpoints: " + checkpointcount+"/ 36"
+      lapscompleted.innerHTML="Laps: " + laps + " / 3"
       
-
       //if the finish line is crossed log laptime, begin new lap and timer
       if(checkStartFinish()){
         if(Onlap){
           if(checkpointcount==36){
+            laps++
             laptimes.push(endTime)
             console.log(laptimes)
             console.log(endTime)
@@ -1503,9 +1598,69 @@ function animate(time) {
       if(Onlap){
         end=new Date()
         endTime=Math.trunc((end.getTime()-startTime)/10)
-        timer.innerHTML = ToTime(endTime);
+        timer.innerHTML = "Current Lap:"+ ToTime(endTime);
+        timeLeft.innerHTML="Time Left:" + ToTime(Math.trunc(timetoComplete-((currentTime.getTime()-startTimeleft.getTime())/10)))
+      }
+      if(Math.trunc(timetoComplete-((currentTime.getTime()-startTimeleft.getTime())/10))<0){
+        timeLeft.innerHTML="Time Left:" + "00:00:00"
+      }
+      if(Math.trunc(timetoComplete-((currentTime.getTime()-startTimeleft.getTime())/10))<=0 && win==false){
+          WinLose.innerHTML="YOU LOST! press R to try again!"
+          WinLose.style.backgroundColor="red"
+          lose=true;
+      }
+      else if(laps==3 && Math.trunc(timetoComplete-((currentTime.getTime()-startTimeleft.getTime())/10))>=0 && !lose){
+        WinLose.innerHTML="YOU WIN! CONGRATS!"
+        WinLose.style.backgroundColor="green"
+        win=true;
+        timer.innerHTML="Current Lap:" + "00:00:00"
+        
+      }
+      
+    
+
+      if(keys.r){
+        porsche.position.z=0
+        porsche.position.x=0
+        speed=0
+        porsche.rotation.set(0,-Math.PI/2 +0.15,0)
+        laps=0
+        if(difficulty=="hard"){
+          timetoComplete=HardtimetoComplete
+        }
+        else if(difficulty=="medium"){
+          timetoComplete=MediumtimetoComplete
+        }
+        else if(difficulty=="easy"){
+          timetoComplete=EasytimetoComplete
+        }
+        else{
+          timetoComplete=10000000000
+        }
+        win=false
+        lose=false
+        laptimes=[]
+        cpcVec=formatVec(checkpointVec)
+        checkpointcount=0 
+        start=new Date();
+        startTime=start.getTime();
+        startTimeleft=new Date();
+        Onlap=false
+        timeLeft.innerHTML=""
+        currentTime=new Date()
+        end=new Date()
+        currentTime.innerHTML=""
+        timer.innerHTML=""
+        WinLose.innerHTML=""
+        loadSound("assets/Sounds/lambo.mp3",0.5)
       }
 
+      if(checkBarrelCollisions()){
+        timetoComplete=timetoComplete-100
+        console.log(true)
+      }
+
+      
       //animate skybox
       skybox.rotateY(Math.PI/4000)
       doLap()
