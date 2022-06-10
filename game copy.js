@@ -13,9 +13,6 @@ import { barrelVec } from "./collision.js";
 import { GUI } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/libs/dat.gui.module.js";
 import { MyParticleSystem } from "./particles.js";
 
-//import settings selected from menu
-var graphicStrorage = localStorage.getItem("graphic");
-var difficultyLevel = localStorage.getItem("difficulty");
 /* #region Variables*/
 var goal, keys, follow;
 var collisionVec2 = [];
@@ -56,10 +53,10 @@ let endTime = 0;
 var laptimes = [];
 let checkpointcount = 0;
 let EasytimetoComplete = 24100;
-let MediumtimetoComplete = 22100;
-let HardtimetoComplete = 21100;
+let MediumtimetoComplete = 20100;
+let HardtimetoComplete = 17200;
 let timetoComplete = 2000;
-let difficulty = difficultyLevel;
+let difficulty = "hard";
 let shadowQuality = 3000; //shadow map size = 1024*3000
 let shadowDistance = 500; //draw distance = 500 units
 let drawDistance = 500; //draw distance = 500 units
@@ -67,9 +64,8 @@ let foliageCount = 1; //full
 let reflections = true; //reflections on
 let updatespersecond = 30; //twice per second 60/30=2
 
-let graphicsSetting = graphicStrorage; //change graphics settings high medium low or lowest
-console.log(graphicsSetting);
-console.log(difficulty);
+let graphicsSetting = "lowest"; //change graphics settings high medium low or lowest
+
 let particles = null;
 let previousTime = null;
 let timeElapsed = null;
@@ -672,13 +668,6 @@ keys = {
   g: false,
 };
 
-document.addEventListener("keydown", function (e) {
-  console.log(e.keyCode);
-  if (e.keyCode === 27) {
-    window.location.href = "index.html";
-  }
-});
-
 //instantiates the controller listener
 document.body.addEventListener("keydown", function (e) {
   const key = e.code.replace("Key", "").toLowerCase();
@@ -1086,7 +1075,6 @@ let factor = 0.00006;
 loadSound("assets/Sounds/lambo.mp3", 0.5);
 
 function animate(time) {
-  //time is the time since the last frame
   counter++;
   timeElapsed = time - previousTime;
 
@@ -1540,8 +1528,9 @@ function animate(time) {
       loadSound("assets/Sounds/lambo.mp3", 0.5);
     }
 
+    // Grenade time
     if (checkBarrelCollisions()) {
-      timetoComplete = timetoComplete - 150;
+      timetoComplete = timetoComplete - 3000;
       console.log(true);
     }
 
@@ -1558,18 +1547,26 @@ function animate(time) {
     goal.position.lerp(temp, 0.04); //accelerate
     temp.setFromMatrixPosition(follow.matrixWorld);
     camera.lookAt(porsche.position);
+    ////////////////////////////////////////////////////////////
+
     particles = new MyParticleSystem({
       parent: ExhaustGroup,
       camera: Playercamera,
     });
 
+    // Render next frame
     renderer.render(scene, Playercamera);
+    if (keys.h) {
+      Step(timeElapsed);
+    }
+    if (keys.g) {
+      Stop();
+    }
     previousTime = time;
   }
 
   stats.end();
 }
 window.addEventListener("DOMContentLoaded", () => {
-  //when the page loads
   renderer.setAnimationLoop(animate);
 });
