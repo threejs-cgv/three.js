@@ -1,0 +1,11 @@
+Model Information:
+* title:	flag
+* source:	https://sketchfab.com/3d-models/flag-defb1b6416d14eaea97f7d79c34e8fed
+* author:	aqeelahmadshoaib (https://sketchfab.com/aqeelahmadshoaib)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "flag" (https://sketchfab.com/3d-models/flag-defb1b6416d14eaea97f7d79c34e8fed) by aqeelahmadshoaib (https://sketchfab.com/aqeelahmadshoaib) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

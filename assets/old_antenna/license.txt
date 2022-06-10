@@ -1,0 +1,11 @@
+Model Information:
+* title:	Old antenna
+* source:	https://sketchfab.com/3d-models/old-antenna-5f0844c0fc704fbea51b34c05c61ee08
+* author:	Apokalips123 (https://sketchfab.com/semarumov)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Old antenna" (https://sketchfab.com/3d-models/old-antenna-5f0844c0fc704fbea51b34c05c61ee08) by Apokalips123 (https://sketchfab.com/semarumov) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
