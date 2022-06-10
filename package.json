@@ -5,7 +5,8 @@
   "main": "game.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "doc": "jsdoc -c jsdoc.json C:/Users/Peace/Documents/Game/three.js/game.js"
+    "doc": "jsdoc -c jsdoc.json C:/Users/Peace/Documents/Game/three.js/game.js",
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,7 @@
   },
   "homepage": "https://github.com/threejs-cgv/threejs#readme",
   "dependencies": {
+    "gh-pages": "^4.0.0",
     "postcss-preset-env": "^7.7.1",
     "readme-md-generator": "^1.0.0",
     "roving-ux": "^1.0.4",
