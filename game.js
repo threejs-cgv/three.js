@@ -54,8 +54,8 @@ let endTime = 0;
 var laptimes = [];
 let checkpointcount = 0;
 let EasytimetoComplete = 24100;
-let MediumtimetoComplete = 20100;
-let HardtimetoComplete = 17200;
+let MediumtimetoComplete = 22100;
+let HardtimetoComplete = 21100;
 let timetoComplete = 2000;
 let difficulty = difficultyLevel;
 let shadowQuality = 3000; //shadow map size = 1024*3000
