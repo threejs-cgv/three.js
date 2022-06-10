@@ -13,7 +13,8 @@ import { barrelVec } from "./collision.js";
 import { GUI } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/libs/dat.gui.module.js";
 import { MyParticleSystem } from "./particles.js";
 import { changeGraphics } from "./graphics.js";
-var temp = localStorage.getItem("graphic");
+var graphicStrorage = localStorage.getItem("graphic");
+
 /* #region Variables*/
 var goal, keys, follow;
 var collisionVec2 = [];
@@ -64,8 +65,8 @@ let foliageCount = 1; //full
 let reflections = true; //reflections on
 let updatespersecond = 30; //twice per second 60/30=2
 
-let graphicsSetting = changeGraphics(temp); //change graphics settings high medium low or lowest
-console.log(temp);
+let graphicsSetting = graphicStrorage; //change graphics settings high medium low or lowest
+console.log(graphicsSetting);
 let particles = null;
 let previousRAF = null;
 
