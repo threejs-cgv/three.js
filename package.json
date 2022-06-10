@@ -2,7 +2,7 @@
   "name": "threejs",
   "version": "1.0.0",
   "description": "Racing Game",
-  "main": "game.js",
+  "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "doc": "jsdoc -c jsdoc.json C:/Users/Peace/Documents/Game/three.js/game.js"
