@@ -12,6 +12,8 @@ import { checkpointVec } from "./collision.js";
 import { barrelVec } from "./collision.js";
 import { GUI } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/libs/dat.gui.module.js";
 import { MyParticleSystem } from "./particles.js";
+import { changeGraphics } from "./graphics.js";
+var graphicStrorage = localStorage.getItem("graphic");
 
 /* #region Variables*/
 var goal, keys, follow;
@@ -63,8 +65,8 @@ let foliageCount = 1; //full
 let reflections = true; //reflections on
 let updatespersecond = 30; //twice per second 60/30=2
 
-let graphicsSetting = "lowest"; //change graphics settings high medium low or lowest
-
+let graphicsSetting = graphicStrorage; //change graphics settings high medium low or lowest
+console.log(graphicsSetting);
 let particles = null;
 let previousRAF = null;
 
@@ -292,10 +294,6 @@ const FrontRightGroup = new THREE.Group();
 const progressBar = document.getElementById("progress-bar");
 
 const loadingManager = new THREE.LoadingManager();
-
-// loadingManager.onStart = function ( url, itemsLoaded, itemsTotal ) {
-//     console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
-// }; // called when loading starts
 
 loadingManager.onProgress = function (item, loaded, total) {
   progressBar.value = (loaded / total) * 100;
