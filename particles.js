@@ -134,8 +134,9 @@ export class MyParticleSystem {
       vertexColors: true,
     });
 
-    // Connect to camera
+    // Connect to camera and scene
     this._camera = params.camera;
+    this._scene = params.parent;
     this._particles = [];
     // console.log("Camera assigned", this._camera);
 
@@ -165,7 +166,7 @@ export class MyParticleSystem {
     this._points = new THREE.Points(this._geometry, this._material);
 
     // Add the points we created to the given scene
-    params.parent.add(this._points);
+    this._scene.add(this._points);
     /* #region Spline stuff */
     // New Software Design principle. A Spline returns progress as a float between 0 and 1
     // 'a' represents the start, 'b' represetns the finish, 't' represents time lapsed
@@ -233,19 +234,30 @@ export class MyParticleSystem {
   }
 
   // Iterate over list of particles and update the buffer geometry object elements with the new particle properties
-  _UpdateGeometry() {
+  _UpdateGeometry(toRender) {
     // console.log("Entered UpdateGeometry()");
     const positions = [];
     const sizes = [];
     const colours = [];
     const angles = [];
-
-    // Fetching the particles lists current properties into list to update
-    for (let p of this._particles) {
-      positions.push(p.position.x, p.position.y, p.position.z);
-      colours.push(p.colour.r, p.colour.g, p.colour.b, p.alpha);
-      sizes.push(p.currentSize);
-      angles.push(p.rotation);
+    if (toRender == true) {
+      // Fetching the particles lists current properties into list to update
+      for (let p of this._particles) {
+        positions.push(p.position.x, p.position.y, p.position.z);
+        colours.push(p.colour.r, p.colour.g, p.colour.b, p.alpha);
+        sizes.push(p.currentSize);
+        angles.push(p.rotation);
+      }
+    } else {
+      for (let p of this._particles) {
+        // Fetching the particles lists current properties into list to update
+        for (let p of this._particles) {
+          positions.push(p.position.x, p.position.y, p.position.z);
+          colours.push(p.colour.r, p.colour.g, p.colour.b, p.alpha);
+          sizes.push(p.currentSize);
+          angles.push(p.rotation);
+        }
+      }
     }
 
     // Using the list to bind the particles updated attributes to the particle system's geometry buffer
@@ -338,6 +350,14 @@ export class MyParticleSystem {
     // console.log("Entered MyParticleSystem.Step()");
     this._AddParticles(timeElapsed);
     this._UpdateParticles(timeElapsed);
-    this._UpdateGeometry();
+    this._UpdateGeometry(true);
+  }
+
+  Stop() {
+    for (var i = this._scene.children.length - 1; i >= 0; i--) {
+      var obj = this._scene.children[i];
+      console.log(obj);
+      this._scene.remove(obj);
+    }
   }
 }

@@ -28,6 +28,7 @@ var wheel1ID = "";
 var wheel2ID = "";
 var wheel3ID = "";
 var wheel4ID = "";
+var exhaustID = "";
 var Onlap = false;
 let laps = 0;
 let win = false;
@@ -66,7 +67,11 @@ let updatespersecond = 30; //twice per second 60/30=2
 let graphicsSetting = "lowest"; //change graphics settings high medium low or lowest
 
 let particles = null;
-let previousRAF = null;
+let previousTime = null;
+let timeElapsed = null;
+
+let currentBurnTime = 0;
+let maxBurnTime = 2000;
 
 /* #endregion */
 
@@ -289,6 +294,7 @@ const porsche = new THREE.Group();
 //wheel groups created for steering of car animation
 const FrontLeftGroup = new THREE.Group();
 const FrontRightGroup = new THREE.Group();
+const ExhaustGroup = new THREE.Group();
 const progressBar = document.getElementById("progress-bar");
 
 const loadingManager = new THREE.LoadingManager();
@@ -314,6 +320,7 @@ let FrontRightWheel;
 let FrontLeftWheel;
 let RearLeftWheel;
 let RearRightWheel;
+let Exhaust;
 let car;
 let track;
 globalBarrelVec = formatbarrelVec();
@@ -322,38 +329,21 @@ const loader = new GLTFLoader(loadingManager);
 
 /* #region Functions/Methods */
 
-// Function to Request an Animation Frame (RAF)
-
-function RAF() {
-  requestAnimationFrame((t) => {
-    // If this is the first animation frame, then set the previous animation frame to the current frame t
-    if (previousRAF === null) {
-      previousRAF = t;
-    }
-    RAF();
-    // Render next frame
-    renderer.render(scene, Playercamera);
-    Step(t - previousRAF);
-    previousRAF = t;
-  });
-}
-// // Function to Request an Animation Frame (RAF)
-
-// function RAF() {
-//   console.log("Entered RAF()");
-//   setInterval(function () {
-//     renderer.render(scene, Playercamera);
-//     Step(3);
-//   }, 100);
-// }
-
 //Process a moving to the next animation frame
 function Step(timeElapsed) {
-  // console.log("ENtered Step() ParticleSystemDEMO.Step()");
   const timeElapsedNew = timeElapsed * 0.001;
-
-  particles.Step(timeElapsedNew);
+  currentBurnTime += timeElapsed;
+  if (currentBurnTime < maxBurnTime && lose == true) {
+    particles.Step(timeElapsedNew);
+  } else {
+    Stop();
+    currentBurnTime = 0;
+  }
 }
+function Stop() {
+  particles.Stop();
+}
+
 //load hdri pack
 rgbeLoader.load("./assets/MR_INT-003_Kitchen_Pierre.hdr", function (texture) {
   texture.mapping = THREE.EquirectangularReflectionMapping;
@@ -415,8 +405,8 @@ loader.load("./assets/porschecar/wheel.gltf", function (gltf) {
   porsche.add(FrontLeftGroup);
 });
 loader.load("./assets/porschecar/wheel.gltf", function (gltf) {
-  const RearRightmodel = gltf.scene;
-  RearRightWheel = RearRightmodel;
+  const RearRightModel = gltf.scene;
+  RearRightWheel = RearRightModel;
   RearRightWheel.position.z -= 1;
   RearRightWheel.position.x -= 0.9;
   RearRightWheel.position.y += 0.35;
@@ -424,8 +414,17 @@ loader.load("./assets/porschecar/wheel.gltf", function (gltf) {
   wheel3ID = RearRightWheel.uuid;
 });
 loader.load("./assets/porschecar/wheel.gltf", function (gltf) {
-  const RearLeftmodel = gltf.scene;
-  RearLeftWheel = RearLeftmodel;
+  const ExhaustModel = gltf.scene;
+  Exhaust = ExhaustModel;
+  Exhaust.position.y += 0.35;
+  Exhaust.position.z -= 1;
+  ExhaustGroup.add(Exhaust);
+  exhaustID = ExhaustGroup.uuid;
+  porsche.add(ExhaustGroup);
+});
+loader.load("./assets/porschecar/wheel.gltf", function (gltf) {
+  const RearLeftModel = gltf.scene;
+  RearLeftWheel = RearLeftModel;
   RearLeftWheel.rotation.y = Math.PI;
   RearLeftWheel.position.z -= 1;
   RearLeftWheel.position.x += 0.9;
@@ -669,6 +668,8 @@ keys = {
   p: false,
   x: false,
   r: false,
+  h: false,
+  g: false,
 };
 
 //instantiates the controller listener
@@ -809,6 +810,7 @@ function checkBarrelCollisions() {
   for (var i = 0; i < vec.length; i++) {
     if (distanceVector(porsche.position, vec[i]) < 5) {
       if (cube1BB.containsPoint(vec[i])) {
+        console.log("Crashed into grenade at ", grenades[i].position);
         scene.remove(grenades[i]);
         return true;
       }
@@ -1078,6 +1080,7 @@ loadSound("assets/Sounds/lambo.mp3", 0.5);
 
 function animate(time) {
   counter++;
+  timeElapsed = time - previousTime;
 
   //sets interval that scene is updated and culled
   if (counter % updatespersecond == 0) {
@@ -1468,14 +1471,17 @@ function animate(time) {
       win == false
     ) {
       // Initialize a new OpenGl particle system with given scene and perspective camera
-      particles = new MyParticleSystem({
-        parent: porsche,
-        camera: Playercamera,
-      });
-      RAF();
+
       // console.log("Particles", particles.particles);
       WinLose.innerHTML = "YOU LOST! press R to try again!";
       WinLose.style.backgroundColor = "red";
+      particles = new MyParticleSystem({
+        parent: ExhaustGroup,
+        camera: Playercamera,
+      });
+
+      Step(timeElapsed);
+
       lose = true;
     } else if (
       laps == 3 &&
@@ -1491,6 +1497,7 @@ function animate(time) {
     }
 
     if (keys.r) {
+      Stop();
       porsche.position.z = 0;
       porsche.position.x = 0;
       // console.log(porsche.particles);
@@ -1525,8 +1532,9 @@ function animate(time) {
       loadSound("assets/Sounds/lambo.mp3", 0.5);
     }
 
+    // Grenade time
     if (checkBarrelCollisions()) {
-      timetoComplete = timetoComplete - 150;
+      timetoComplete = timetoComplete - 3000;
       console.log(true);
     }
 
@@ -1543,7 +1551,22 @@ function animate(time) {
     goal.position.lerp(temp, 0.04); //accelerate
     temp.setFromMatrixPosition(follow.matrixWorld);
     camera.lookAt(porsche.position);
-    renderer.render(scene, Playercamera); // render the scene
+    ////////////////////////////////////////////////////////////
+
+    particles = new MyParticleSystem({
+      parent: ExhaustGroup,
+      camera: Playercamera,
+    });
+
+    // Render next frame
+    renderer.render(scene, Playercamera);
+    if (keys.h) {
+      Step(timeElapsed);
+    }
+    if (keys.g) {
+      Stop();
+    }
+    previousTime = time;
   }
 
   stats.end();
