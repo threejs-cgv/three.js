@@ -1,6 +1,6 @@
 {
   "source": {
-      "includePattern": ".js$",
+      "includePattern": "game.js",
       "excludePattern": "(node_modules/|docs)"
     },
     "plugins": ["plugins/markdown"],
