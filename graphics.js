@@ -2,19 +2,19 @@ var graphics = "lowest"; // default
 
 function changeGraphics(value) {
 
-    if (value == 1) {
+    if (value == "lowest") {
         graphics = "lowest";
         console.log(graphics);
     }
-    if (value == 2) {
+    if (value == "low") {
         graphics = "low";
         console.log(graphics);
     }
-    if (value == 3) {
+    if (value == "medium") {
         graphics = "medium";
         console.log(graphics);
     }
-    if (value == 4) {
+    if (value == "high") {
         graphics = "high";
         console.log(graphics);
     }

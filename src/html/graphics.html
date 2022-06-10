@@ -10,23 +10,56 @@
     <meta name="theme-color" content="hsl(221 90% 98%)" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="Canvas" media="(prefers-color-scheme: dark)">
     <meta name="description" content="🙂">
-    <link rel="stylesheet" href="/src/css/styles.css">
-    <script type="module" src="/src/js/index.js"></script>
-    <script type="module" src="/src/js/graphics.js"></script>
+    <link rel="stylesheet" href="/styles.css">
+    <script type="module" src="/graphics.js"></script>
 </head>
 <body>
   
-    <script type="text/script">
-        
-    </script>
+    
     <ul class="threeD-button-set">
-        <li><button onclick="changeGraphics(1)">Lowest</button></li>
-        <li><button onclick="changeGraphics(2)">Low</button></li>
-        <li><button>Medium</button></li>
-        <li><button>High</button></li>
+        <li><button id="lowest">Lowest</button></li>
+        <li><button id="low">Low</button></li>
+        <li><button id="medium">Medium</button></li>
+        <li><button id="high">High</button></li>
         <li><button onclick="window.location.href='settings.html'">Back</button></li>
     </ul>
-    
+    <script>
+        var graphics = "lowest"
+        var lowest = document.getElementById("lowest")
+        lowest.addEventListener("click", function(){
+            graphics="lowest"
+            console.log(graphics)
+            localStorage.setItem("graphic", graphics);
+            window.location.href='home.html'
+        });
+
+        var graphics = "low"
+        var low= document.getElementById("low")
+        low.addEventListener("click", function(){
+            graphics="low"
+            console.log(graphics)
+            localStorage.setItem("graphic", graphics);
+            window.location.href='home.html'
+        });
+
+        var graphics = "medium"
+        var medium = document.getElementById("medium")
+        medium.addEventListener("click", function(){
+            graphics="medium"
+            console.log(graphics)
+            localStorage.setItem("graphic", graphics);
+            window.location.href='home.html'
+        });
+
+        var graphics = "high"
+        var high= document.getElementById("high")
+        high.addEventListener("click", function(){
+            graphics="high"
+            console.log(graphics)
+            localStorage.setItem("graphic", graphics);
+            window.location.href='home.html'
+        });
+    </script>
 
 </body>
 </htre>
