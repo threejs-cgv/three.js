@@ -670,6 +670,14 @@ keys = {
   r: false,
 };
 
+
+document.addEventListener("keydown", function(e) {
+  console.log(e.keyCode);
+  if(e.keyCode === 27) {
+    window.location.href = "index.html";
+  }
+});
+
 //instantiates the controller listener
 document.body.addEventListener("keydown", function (e) {
   const key = e.code.replace("Key", "").toLowerCase();
@@ -1075,7 +1083,7 @@ let factor = 0.00006;
 
 loadSound("assets/Sounds/lambo.mp3", 0.5);
 
-function animate(time) {
+function animate(time) { //time is the time since the last frame
   counter++;
 
   //sets interval that scene is updated and culled
@@ -1547,6 +1555,6 @@ function animate(time) {
 
   stats.end();
 }
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", () => { //when the page loads
   renderer.setAnimationLoop(animate);
 });
