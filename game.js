@@ -12,9 +12,9 @@ import { checkpointVec } from "./collision.js";
 import { barrelVec } from "./collision.js";
 import { GUI } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/libs/dat.gui.module.js";
 import { MyParticleSystem } from "./particles.js";
-import { changeGraphics } from "./graphics.js";
+//import settings selected from menu
 var graphicStrorage = localStorage.getItem("graphic");
-
+var difficultyLevel = localStorage.getItem("difficulty");
 /* #region Variables*/
 var goal, keys, follow;
 var collisionVec2 = [];
@@ -57,7 +57,7 @@ let EasytimetoComplete = 24100;
 let MediumtimetoComplete = 20100;
 let HardtimetoComplete = 17200;
 let timetoComplete = 2000;
-let difficulty = "hard";
+let difficulty = difficultyLevel;
 let shadowQuality = 3000; //shadow map size = 1024*3000
 let shadowDistance = 500; //draw distance = 500 units
 let drawDistance = 500; //draw distance = 500 units
@@ -67,6 +67,7 @@ let updatespersecond = 30; //twice per second 60/30=2
 
 let graphicsSetting = graphicStrorage; //change graphics settings high medium low or lowest
 console.log(graphicsSetting);
+console.log(difficulty);
 let particles = null;
 let previousRAF = null;
 
