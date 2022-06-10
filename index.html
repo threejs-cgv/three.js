@@ -1,51 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-  <title>Racing Game Beta</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #000;
-      color: #fff;
-
-    }
-
-    .progress-bar-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100%;
-      height: 100%;
-      transform: translate(-50%, -50%);
-      background-color: rgba(0,0,0,0.8);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #progress-bar {
-      width: 30%;
-      margin-top: 0.5%;
-      height: 2%;
-    }
-    label {
-      color: white;
-      font-size: 2rem;
-      font-weight: bold;
-    }
-  </style>
-</head>
-<body>
-  <div class="progress-bar-container">
-    <label for="progress-bar">Loading...</label>
-    <progress id="progress-bar" value="0" max="100"></progress>
-  </div>
-  <script src="./game.js" type="module">
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta
+      name="theme-color"
+      content="hsl(221 90% 98%)"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="Canvas"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta name="description" content="🙂" />
+    <!-- <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml"> -->
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="module" src="/index.js"></script>
+  </head>
+  <body>
+    <ul class="threeD-button-set">
+      <li>
+        <button onclick="window.location.href='difficulty.html'">Play Game</button>
+      </li>
+      <li>
+        <button onclick="window.location.href='settings.html'">Settings</button>
+      </li>
+      <li>
+        <button onclick="window.location.href='control.html'">Controls</button>
+      </li>
+      <li>
+        <button onclick="window.location.href='/docs/index.html'">About</button>
+      </li>
+     
+    </ul>
+  </body>
 </html>

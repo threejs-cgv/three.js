@@ -1,23 +1,27 @@
 {
   "name": "threejs",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Racing Game",
+  "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "doc": "jsdoc -c jsdoc.json C:/Users/Peace/Documents/Game/three.js/game.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/threejs-cgv/threejs.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Angela Nkosi, Riot Ndlovu, Nokuthaba Moyo, Callum Muller, Shagan Plaatjies",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/threejs-cgv/threejs/issues"
   },
   "homepage": "https://github.com/threejs-cgv/threejs#readme",
   "dependencies": {
+    "postcss-preset-env": "^7.7.1",
+    "readme-md-generator": "^1.0.0",
+    "roving-ux": "^1.0.4",
     "stats": "^1.0.0",
     "stats.js": "^0.17.0",
     "three": "^0.140.2",
@@ -26,6 +30,7 @@
   "devDependencies": {
     "@parcel/config-default": "^2.6.0",
     "dat.gui": "^0.7.9",
+    "jsdoc": "^3.6.10",
     "parcel-reporter-static-files-copy": "^1.3.4"
   },
   "staticFiles": {

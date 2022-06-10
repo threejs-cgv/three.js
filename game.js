@@ -12,7 +12,9 @@ import { checkpointVec } from "./collision.js";
 import { barrelVec } from "./collision.js";
 import { GUI } from "https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/libs/dat.gui.module.js";
 import { MyParticleSystem } from "./particles.js";
-
+//import settings selected from menu
+var graphicStrorage = localStorage.getItem("graphic");
+var difficultyLevel = localStorage.getItem("difficulty");
 /* #region Variables*/
 var goal, keys, follow;
 var collisionVec2 = [];
@@ -52,10 +54,10 @@ let endTime = 0;
 var laptimes = [];
 let checkpointcount = 0;
 let EasytimetoComplete = 24100;
-let MediumtimetoComplete = 20100;
-let HardtimetoComplete = 17200;
+let MediumtimetoComplete = 22100;
+let HardtimetoComplete = 21100;
 let timetoComplete = 2000;
-let difficulty = "hard";
+let difficulty = difficultyLevel;
 let shadowQuality = 3000; //shadow map size = 1024*3000
 let shadowDistance = 500; //draw distance = 500 units
 let drawDistance = 500; //draw distance = 500 units
@@ -63,8 +65,9 @@ let foliageCount = 1; //full
 let reflections = true; //reflections on
 let updatespersecond = 30; //twice per second 60/30=2
 
-let graphicsSetting = "lowest"; //change graphics settings high medium low or lowest
-
+let graphicsSetting = graphicStrorage; //change graphics settings high medium low or lowest
+console.log(graphicsSetting);
+console.log(difficulty);
 let particles = null;
 let previousRAF = null;
 
@@ -289,9 +292,21 @@ const porsche = new THREE.Group();
 //wheel groups created for steering of car animation
 const FrontLeftGroup = new THREE.Group();
 const FrontRightGroup = new THREE.Group();
+const progressBar = document.getElementById("progress-bar");
+
+const loadingManager = new THREE.LoadingManager();
+
+loadingManager.onProgress = function (item, loaded, total) {
+  progressBar.value = (loaded / total) * 100;
+}; // called when an item has been loaded
+
+const progressBarContainer = document.querySelector(".progress-bar-container");
+loadingManager.onLoad = function () {
+  progressBarContainer.style.display = "none";
+}; // called when all items have been loaded
 
 //instantiates a new loader to load hdri pack
-const rgbeLoader = new RGBELoader();
+const rgbeLoader = new RGBELoader(loadingManager);
 
 //initializes models that are about to be loaded
 let FrontRightWheel;
@@ -302,7 +317,7 @@ let car;
 let track;
 globalBarrelVec = formatbarrelVec();
 //instantiates a new gltf loader to load models
-const loader = new GLTFLoader();
+const loader = new GLTFLoader(loadingManager);
 
 /* #region Functions/Methods */
 
@@ -654,6 +669,14 @@ keys = {
   x: false,
   r: false,
 };
+
+
+document.addEventListener("keydown", function(e) {
+  console.log(e.keyCode);
+  if(e.keyCode === 27) {
+    window.location.href = "index.html";
+  }
+});
 
 //instantiates the controller listener
 document.body.addEventListener("keydown", function (e) {
@@ -1060,7 +1083,7 @@ let factor = 0.00006;
 
 loadSound("assets/Sounds/lambo.mp3", 0.5);
 
-function animate(time) {
+function animate(time) { //time is the time since the last frame
   counter++;
 
   //sets interval that scene is updated and culled
@@ -1477,6 +1500,8 @@ function animate(time) {
     if (keys.r) {
       porsche.position.z = 0;
       porsche.position.x = 0;
+      // console.log(porsche.particles);
+      // porsche.remove(particles);
       speed = 0;
       porsche.rotation.set(0, -Math.PI / 2 + 0.15, 0);
       laps = 0;
@@ -1530,6 +1555,6 @@ function animate(time) {
 
   stats.end();
 }
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", () => { //when the page loads
   renderer.setAnimationLoop(animate);
 });

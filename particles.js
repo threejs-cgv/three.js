@@ -166,7 +166,6 @@ export class MyParticleSystem {
 
     // Add the points we created to the given scene
     params.parent.add(this._points);
-
     /* #region Spline stuff */
     // New Software Design principle. A Spline returns progress as a float between 0 and 1
     // 'a' represents the start, 'b' represetns the finish, 't' represents time lapsed
